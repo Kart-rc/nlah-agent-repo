@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "task-state.schema.json",
+  "title": "Run State Contracts",
+  "description": "Contracts for the externalized run state: task_state.json (root), gate.json, and verdict.json ($defs). The orchestration loop is a pure function of task_state.json.",
+  "type": "object",
+  "required": ["run_id", "workflow", "status", "created_at", "updated_at", "classification", "stages"],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": { "type": "string", "pattern": "^[0-9]{8}-[0-9]{4}-[a-z][a-z0-9-]*$" },
+    "workflow": {
+      "type": "object",
+      "required": ["id", "lock"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+        "lock": { "const": "workflow.lock.yaml" }
+      }
+    },
+    "status": { "enum": ["running", "awaiting_approval", "escalated", "complete", "aborted"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "classification": {
+      "type": "object",
+      "description": "The router's REQUEST CLASSIFICATION, recorded at run initialization.",
+      "required": ["work_type", "risk", "assumptions", "approval"],
+      "additionalProperties": false,
+      "properties": {
+        "work_type": { "type": "string" },
+        "risk": { "enum": ["low", "medium", "high", "critical"] },
+        "gates_applied": { "type": "array", "items": { "type": "string" } },
+        "assumptions": { "type": "array", "items": { "type": "string" } },
+        "approval": {
+          "type": "object",
+          "required": ["required"],
+          "additionalProperties": false,
+          "properties": {
+            "required": { "type": "boolean" },
+            "granted_at": { "type": ["string", "null"], "format": "date-time" }
+          }
+        }
+      }
+    },
+    "current_stage": { "type": ["string", "null"] },
+    "stages": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/stageState" }
+    }
+  },
+  "$defs": {
+    "stageState": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "enum": ["pending", "in_progress", "validating", "repairing", "passed", "escalated"] },
+        "attempts": { "type": "integer", "minimum": 0 },
+        "artifacts": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Output name → path relative to the run directory."
+        },
+        "summary": { "type": ["string", "null"], "description": "Path to summary.md, relative to the run directory." }
+      }
+    },
+    "gate": {
+      "title": "gate.json",
+      "type": "object",
+      "required": ["status", "attempts"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "enum": ["pending", "passed", "failed", "exhausted"] },
+        "attempts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["n", "verdicts", "outcome"],
+            "additionalProperties": false,
+            "properties": {
+              "n": { "type": "integer", "minimum": 1 },
+              "verdicts": {
+                "type": "object",
+                "additionalProperties": { "enum": ["pass", "fail", "error"] },
+                "description": "Validator id → verdict. 'error' = F3 tool/environment failure, does not consume repair budget."
+              },
+              "outcome": { "enum": ["passed", "repair", "escalated", "aborted"] }
+            }
+          }
+        }
+      }
+    },
+    "verdict": {
+      "title": "verdict.json",
+      "type": "object",
+      "required": ["verdict", "findings", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "verdict": { "enum": ["pass", "fail", "error"] },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["severity", "criterion", "evidence", "suggested_fix"],
+            "additionalProperties": false,
+            "properties": {
+              "severity": { "enum": ["blocker", "major", "minor"] },
+              "criterion": { "type": "string", "description": "The acceptance criterion or checklist item violated." },
+              "evidence": { "type": "string", "description": "Concrete evidence: file path + what is wrong. A finding without a concrete failure scenario is not a finding." },
+              "suggested_fix": { "type": "string" }
+            }
+          }
+        },
+        "summary": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

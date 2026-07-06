@@ -1,0 +1,150 @@
+# SDLC Change Delivery — the reference workflow manifest.
+# This file is the single runtime source of truth for this workflow:
+# every stage, validator, knowledge adapter, practice skill, and gate policy
+# is explicit here. Attach/detach/swap = edit a line, then run
+# `python3 scripts/harness_lint.py`.
+
+manifest_version: "1.0"
+
+workflow:
+  id: sdlc
+  name: "SDLC Change Delivery"
+  description: "Take a software change request from requirements through verified, delivered code."
+  intent:
+    summary: "Software changes: features, bug fixes, refactors, API changes, performance work, code migrations."
+    triggers:
+      - "add a feature to ..."
+      - "fix the bug where ..."
+      - "refactor / migrate / implement ..."
+      - "change the API so that ..."
+      - "make ... faster"
+    signals: [code, repo, bug, feature, API, test, refactor, migrate, performance]
+    work_types:
+      - new-feature
+      - bug-fix
+      - api-interface-change
+      - performance-cost-change
+      - refactor-simplification
+
+inputs:
+  - name: request
+    description: "The user's change request, verbatim."
+    format: markdown
+    required: true
+  - name: target_repo
+    description: "Path to the codebase to change."
+    format: path
+    required: true
+
+defaults:
+  gate:
+    max_repair_attempts: 2
+    on_exhaustion: escalate
+  producer_context: fresh
+
+# Workflow-level knowledge adapters. Attach org context in one line:
+#   - uses: knowledge/enterprise-mcp
+knowledge: []
+
+stages:
+  - id: intake
+    uses: stages/intake
+    needs: []
+    inputs:
+      request: "workflow:request"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/requirements.md
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "ambiguity, missing acceptance criteria, hidden assumptions"
+    skills:
+      - uses: skillpacks/addyosmani/interview-me
+      - uses: skillpacks/addyosmani/spec-driven-development
+
+  - id: design
+    uses: stages/design
+    needs: [intake]
+    inputs:
+      requirements: "intake:requirements"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/architecture.md
+      - uses: validators/adversarial-reviewer
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Site Reliability Engineer reviewing for operability, failure modes, and rollback"
+    skills:
+      - uses: skillpacks/addyosmani/spec-driven-development
+      - uses: skillpacks/addyosmani/api-and-interface-design
+
+  - id: plan
+    uses: stages/plan
+    needs: [design]
+    inputs:
+      requirements: "intake:requirements"
+      design: "design:design_doc"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "every requirement id in requirements.md appears in the plan's traceability section"
+      - uses: validators/adversarial-reviewer
+    skills:
+      - uses: skillpacks/addyosmani/planning-and-task-breakdown
+
+  - id: implement
+    uses: stages/implement
+    needs: [plan]
+    inputs:
+      plan: "plan:implementation_plan"
+      design: "design:design_doc"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/red-team
+    gate:
+      max_repair_attempts: 3
+    skills:
+      - uses: skillpacks/addyosmani/incremental-implementation
+      - uses: skillpacks/addyosmani/test-driven-development
+
+  - id: verify
+    uses: stages/verify
+    needs: [implement]
+    inputs:
+      change_summary: "implement:change_summary"
+      requirements: "intake:requirements"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "test adequacy - what is untested, what evidence is missing, where the report overstates its output"
+    skills:
+      - uses: skillpacks/addyosmani/debugging-and-error-recovery
+
+  - id: deliver
+    uses: stages/deliver
+    needs: [verify]
+    inputs:
+      change_summary: "implement:change_summary"
+      verification_report: "verify:verification_report"
+      requirements: "intake:requirements"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/release.md
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Non-technical stakeholder who must understand what changed, why, and what risk remains"
+    skills:
+      - uses: skillpacks/addyosmani/shipping-and-launch
+
+outputs:
+  - name: delivered_change
+    from: "deliver:delivery_package"
+  - name: verification_report
+    from: "verify:verification_report"

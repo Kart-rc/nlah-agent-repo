@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stage-contract.schema.json",
+  "title": "Stage Contract (stage.md frontmatter)",
+  "description": "Machine contract of a self-contained stage. The markdown body carries the NL policy (Purpose, Procedure, Output format constraints, Knowledge consumption, Boundaries, Self-check, Summary requirement).",
+  "type": "object",
+  "required": ["id", "summary", "producer", "inputs", "outputs", "acceptance_criteria", "default_validators"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "summary": { "type": "string", "minLength": 1 },
+    "producer": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Persona in .claude/agents/ that executes this stage. Must never equal a validator's agent (linted)."
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ioDecl" }
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "file", "format", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "file": { "type": "string", "minLength": 1, "description": "Filename within the stage's artifacts/ directory." },
+          "format": { "enum": ["markdown", "json", "yaml", "path", "code", "text"] },
+          "description": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "The contract validators judge against. This is the centerpiece: keep criteria concrete and checkable."
+    },
+    "default_validators": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["uses"],
+        "additionalProperties": false,
+        "properties": {
+          "uses": { "type": "string", "pattern": "^validators/[a-z][a-z0-9-]*$" },
+          "with": { "type": "object" }
+        }
+      },
+      "description": "Copied into manifests by the workflow-composer at scaffold time. Never read at runtime."
+    },
+    "knowledge_slots": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+      "description": "Adapter capabilities this stage can consume if attached (e.g. org-context, prior-art, personal-notes)."
+    },
+    "skill_refs": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^skillpacks/[a-z][a-z0-9-]*/[a-z][a-z0-9-]*$" },
+      "description": "Suggested practice skills, copied into manifests by the composer like default_validators."
+    },
+    "permissions": {
+      "type": "object",
+      "required": ["writes"],
+      "additionalProperties": false,
+      "properties": {
+        "writes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "enum": ["own_artifact_dir", "target_repo"] }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "ioDecl": {
+      "type": "object",
+      "required": ["name", "description", "format", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "description": { "type": "string", "minLength": 1 },
+        "format": { "enum": ["markdown", "json", "yaml", "path", "code", "text"] },
+        "required": { "type": "boolean" }
+      }
+    }
+  }
+}

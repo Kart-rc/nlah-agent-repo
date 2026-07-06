@@ -1,0 +1,24 @@
+{
+  "verdict": "fail",
+  "findings": [
+    {
+      "severity": "major",
+      "criterion": "Release gate checklist (harness/policies/gates/release.md): 'Monitoring exists for the changed behavior'",
+      "evidence": "runs/20260706-0307-sdlc-toy-cli/stages/deliver/artifacts/delivery.md contains no content addressing monitoring: case-insensitive search for monitor/observab/watch/alert returns zero matches. The artifact neither describes monitoring nor states that the item is trivially satisfied or not applicable for this change; it is silent. The PARAMETERS block requires every checklist item to be addressed explicitly, not silently ('it must say so, not be silent'). The post-release check (delivery.md, 'Post-release check' under ## Release and rollback) is a one-time validation and addresses the separate 'Post-launch validation steps defined' item, not monitoring.",
+      "suggested_fix": "Add an explicit statement to delivery.md (e.g. under ## Release and rollback or ## Risks and follow-ups) saying what monitoring exists for the changed behavior, or why none is applicable (e.g. a stateless, self-contained example script with no runtime service, no dependents, and no production execution path — nothing to monitor)."
+    },
+    {
+      "severity": "minor",
+      "criterion": "Release gate checklist (harness/policies/gates/release.md): 'Build passes'",
+      "evidence": "runs/20260706-0307-sdlc-toy-cli/stages/deliver/artifacts/delivery.md never uses the word 'build' (case-insensitive search returns zero matches). The nearest coverage is the ## Release and rollback statement 'there is no packaging, no installation, no CI wiring, and no deploy step', which implies no build step exists but does not name the item. Counted as addressed-by-implication; flagged because the checklist item is not explicitly dispositioned.",
+      "suggested_fix": "State explicitly in delivery.md that there is no build step (nothing to compile or package for a plain Python script), so the 'Build passes' item is visibly N/A rather than inferred."
+    },
+    {
+      "severity": "minor",
+      "criterion": "Stage acceptance criterion: 'Every claim in the package is traceable to the change summary or verification report - no new claims appear here.'",
+      "evidence": "runs/20260706-0307-sdlc-toy-cli/stages/deliver/artifacts/delivery.md (## Release and rollback, lines 106-109) claims the change 'sits on git branch claude/agentic-magnetic-harness-rbpq8c' and that 'the harness orchestrator does this at run end'; neither claim appears in stages/implement/artifacts/change_summary.md or stages/verify/artifacts/verification_report.md (search for the branch name matches only delivery.md). The package discloses the provenance as 'release context supplied to this stage' (opening paragraph and ## Knowledge gaps), a source outside the two artifacts the criterion names. All other spot-checked claims and every evidence pointer (§ R1a, R1b, R2, R3, R4, R5, Negative cases, Test suite, Gaps; change_summary § Deviations, § Test coverage) resolve to real sections of the declared inputs.",
+      "suggested_fix": "Trace the branch name and orchestrator-commit claims to an on-disk artifact of the run, or explicitly mark them as unverified operational context rather than asserting them as fact."
+    }
+  ],
+  "summary": "delivery.md exists, is non-empty markdown, contains all seven required sections in the contract-mandated order, and artifacts/ contains nothing beyond the declared output. All five stage acceptance criteria are addressed: the SUMMARY block opens the package with what/why/files/verification/risks; every evidence pointer resolves to a real section of verification_report.md or change_summary.md; all three verification-report gaps are carried forward visibly; release and rollback procedures are stated concretely. Release gate checklist: 6 of 8 items are explicitly addressed (tests-with-evidence, migration N/A, concrete rollback, risks documented, post-launch validation command, rollout plan stated). FAIL because the 'Monitoring exists for the changed behavior' item is entirely unaddressed — the artifact is silent on monitoring rather than declaring it satisfied or N/A — and 'Build passes' is only addressed by implication. One minor traceability leak (branch name / orchestrator claim from undeclared 'release context') is disclosed in the package itself."
+}

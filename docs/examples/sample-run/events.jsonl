@@ -1,0 +1,23 @@
+{"ts":"2026-07-06T03:07:45Z","stage":null,"event":"run_initialized","detail":"workflow=sdlc risk=low overlay=noop"}
+{"ts": "2026-07-06T03:14:05Z", "stage": "intake", "event": "produced", "detail": "attempt 1"}
+{"ts": "2026-07-06T03:14:05Z", "stage": "intake", "event": "gate_passed", "detail": "completeness-check=pass adversarial-reviewer=pass"}
+{"ts": "2026-07-06T03:14:05Z", "stage": "design", "event": "stage_started", "detail": ""}
+{"ts": "2026-07-06T03:21:35Z", "stage": "design", "event": "produced", "detail": "attempt 1"}
+{"ts": "2026-07-06T03:21:35Z", "stage": "design", "event": "gate_passed", "detail": "completeness-check=pass adversarial-reviewer=pass persona-reviewer=pass"}
+{"ts": "2026-07-06T03:21:35Z", "stage": "plan", "event": "stage_started", "detail": ""}
+{"ts": "2026-07-06T03:26:22Z", "stage": "plan", "event": "produced", "detail": "attempt 1"}
+{"ts": "2026-07-06T03:26:22Z", "stage": "plan", "event": "gate_passed", "detail": "completeness-check=pass adversarial-reviewer=pass"}
+{"ts": "2026-07-06T03:26:22Z", "stage": null, "event": "orchestrator_reset", "detail": "resume test: context dropped after stage 3; state on disk is sole authority"}
+{"ts": "2026-07-06T03:26:35Z", "stage": "implement", "event": "stage_started", "detail": "resumed from state"}
+{"ts": "2026-07-06T03:32:56Z", "stage": "implement", "event": "produced", "detail": "attempt 1"}
+{"ts": "2026-07-06T03:32:56Z", "stage": "implement", "event": "gate_passed", "detail": "completeness-check=pass red-team=pass"}
+{"ts": "2026-07-06T03:32:56Z", "stage": "verify", "event": "stage_started", "detail": ""}
+{"ts": "2026-07-06T03:42:38Z", "stage": "verify", "event": "produced", "detail": "attempt 1"}
+{"ts": "2026-07-06T03:42:38Z", "stage": "verify", "event": "gate_passed", "detail": "completeness-check=pass adversarial-reviewer=pass"}
+{"ts": "2026-07-06T03:42:38Z", "stage": "deliver", "event": "stage_started", "detail": ""}
+{"ts": "2026-07-06T03:48:37Z", "stage": "deliver", "event": "produced", "detail": "attempt 1"}
+{"ts": "2026-07-06T03:48:37Z", "stage": "deliver", "event": "gate_failed", "detail": "completeness-check=fail (release checklist: monitoring unaddressed); fail-fast"}
+{"ts": "2026-07-06T03:48:37Z", "stage": "deliver", "event": "repair_started", "detail": "attempt 2 of max 3 (max_repair_attempts=2)"}
+{"ts": "2026-07-06T03:55:10Z", "stage": "deliver", "event": "produced", "detail": "attempt 2 (repair)"}
+{"ts": "2026-07-06T03:55:10Z", "stage": "deliver", "event": "gate_passed", "detail": "completeness-check=pass persona-reviewer=pass"}
+{"ts": "2026-07-06T03:55:10Z", "stage": null, "event": "run_complete", "detail": "outputs: delivered_change=stages/deliver/artifacts/delivery.md verification_report=stages/verify/artifacts/verification_report.md"}

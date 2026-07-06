@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "attempts": [
+    { "n": 1,
+      "verdicts": { "completeness-check": "pass", "adversarial-reviewer": "pass" },
+      "outcome": "passed" }
+  ]
+}

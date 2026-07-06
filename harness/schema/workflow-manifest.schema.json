@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "workflow-manifest.schema.json",
+  "title": "NLAH Harness Workflow Manifest",
+  "description": "The load-bearing, SDK-ready contract for a composed workflow. The manifest is the single runtime source of truth: every stage, validator, knowledge adapter, practice skill, and gate policy is explicit here.",
+  "type": "object",
+  "required": ["manifest_version", "workflow", "inputs", "defaults", "stages", "outputs"],
+  "additionalProperties": false,
+  "properties": {
+    "manifest_version": { "const": "1.0" },
+    "workflow": {
+      "type": "object",
+      "required": ["id", "name", "description", "intent"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "intent": {
+          "type": "object",
+          "description": "Router classification block: how requests match this workflow.",
+          "required": ["summary", "triggers"],
+          "additionalProperties": false,
+          "properties": {
+            "summary": { "type": "string", "minLength": 1 },
+            "triggers": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1,
+              "description": "Example request phrasings that should route here."
+            },
+            "signals": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Keywords whose presence in a request suggests this workflow."
+            },
+            "work_types": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Router work-type taxonomy entries served by this workflow."
+            }
+          }
+        }
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ioDecl" },
+      "description": "Workflow-level inputs the router must collect before starting a run."
+    },
+    "defaults": {
+      "type": "object",
+      "required": ["gate"],
+      "additionalProperties": false,
+      "properties": {
+        "gate": { "$ref": "#/$defs/gatePolicy" },
+        "producer_context": {
+          "const": "fresh",
+          "description": "Every producer attempt runs in a fresh subagent context."
+        }
+      }
+    },
+    "knowledge": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/knowledgeAttachment" },
+      "description": "Workflow-level knowledge adapters, available to every stage with a matching knowledge_slot."
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "uses", "needs", "inputs", "validators"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "$ref": "#/$defs/slug" },
+          "uses": {
+            "type": "string",
+            "pattern": "^stages/[a-z][a-z0-9-]*$",
+            "description": "Stage library reference, relative to harness/."
+          },
+          "needs": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/slug" },
+            "description": "Stage ids that must be passed before this stage runs. v1 executes sequentially in needs order."
+          },
+          "inputs": {
+            "type": "object",
+            "additionalProperties": { "$ref": "#/$defs/binding" },
+            "description": "Map of stage-contract input name to binding."
+          },
+          "validators": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/$defs/validatorAttachment" },
+            "description": "Every stage must carry at least one validator; completeness-check first by convention (linted)."
+          },
+          "knowledge": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/knowledgeAttachment" },
+            "description": "Stage-level knowledge adapters, additive to workflow-level ones."
+          },
+          "skills": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/skillAttachment" },
+            "description": "Practice skills the producer must read before starting."
+          },
+          "gate": { "$ref": "#/$defs/gatePolicy" }
+        }
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "from"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "from": { "$ref": "#/$defs/binding" }
+        }
+      },
+      "description": "The workflow's deliverable set, bound to stage outputs."
+    }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "binding": {
+      "type": "string",
+      "pattern": "^(workflow|[a-z][a-z0-9-]*):[a-z][a-z0-9_]*$",
+      "description": "\"workflow:<input-name>\" or \"<stage-id>:<output-name>\". Dict lookup, no template language."
+    },
+    "ioDecl": {
+      "type": "object",
+      "required": ["name", "description", "format", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "description": { "type": "string", "minLength": 1 },
+        "format": { "enum": ["markdown", "json", "yaml", "path", "code", "text"] },
+        "required": { "type": "boolean" }
+      }
+    },
+    "gatePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_repair_attempts": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "on_exhaustion": { "enum": ["escalate", "abort"] }
+      }
+    },
+    "validatorAttachment": {
+      "type": "object",
+      "required": ["uses"],
+      "additionalProperties": false,
+      "properties": {
+        "uses": { "type": "string", "pattern": "^validators/[a-z][a-z0-9-]*$" },
+        "with": { "type": "object" },
+        "required": { "type": "boolean", "default": true }
+      }
+    },
+    "knowledgeAttachment": {
+      "type": "object",
+      "required": ["uses"],
+      "additionalProperties": false,
+      "properties": {
+        "uses": { "type": "string", "pattern": "^knowledge/[a-z][a-z0-9-]*$" },
+        "with": { "type": "object" },
+        "required": { "type": "boolean", "default": false }
+      }
+    },
+    "skillAttachment": {
+      "type": "object",
+      "required": ["uses"],
+      "additionalProperties": false,
+      "properties": {
+        "uses": { "type": "string", "pattern": "^skillpacks/[a-z][a-z0-9-]*/[a-z][a-z0-9-]*$" }
+      }
+    }
+  }
+}
