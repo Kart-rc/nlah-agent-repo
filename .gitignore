@@ -1,0 +1,8 @@
+# Run state is operational data (may contain enterprise/personal knowledge
+# pulled via adapters). A trimmed illustrative snapshot lives in
+# docs/examples/sample-run/ instead.
+runs/*
+!runs/README.md
+
+__pycache__/
+*.pyc

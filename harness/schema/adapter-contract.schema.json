@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adapter-contract.schema.json",
+  "title": "Knowledge Adapter Contract (adapter.md frontmatter)",
+  "description": "Machine contract of an attachable knowledge source. The markdown body carries What this source knows, How to query, When to consult, Citation rule, and On failure.",
+  "type": "object",
+  "required": ["id", "summary", "kind", "capabilities", "failure_mode"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "summary": { "type": "string", "minLength": 1 },
+    "kind": {
+      "enum": ["mcp", "filesystem"],
+      "description": "mcp = queried via MCP tools; filesystem = read from local paths."
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+      "description": "Capability tags matched against stage knowledge_slots (e.g. org-context, prior-art, personal-notes)."
+    },
+    "tools_required": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "MCP tool name patterns this adapter needs (informational; availability is checked at run time)."
+    },
+    "failure_mode": {
+      "enum": ["degrade", "block"],
+      "description": "degrade: proceed and record knowledge_gaps in the artifact (F6). block: escalate the run."
+    }
+  }
+}

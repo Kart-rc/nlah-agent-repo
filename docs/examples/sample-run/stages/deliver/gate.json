@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "attempts": [
+    { "n": 1,
+      "verdicts": { "completeness-check": "fail", "persona-reviewer": "pass" },
+      "outcome": "repair" },
+    { "n": 2,
+      "verdicts": { "completeness-check": "pass", "persona-reviewer": "pass" },
+      "outcome": "passed" }
+  ]
+}

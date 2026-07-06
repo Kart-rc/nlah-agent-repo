@@ -1,0 +1,64 @@
+# Risk policy: how the router's risk classification changes a run.
+#
+# Applied ONCE, at run initialization (HARNESS.md §3.0.3): the router appends
+# each matching `additional_validators` entry to the named stage's validator
+# list and inserts `approval_checkpoints` while writing workflow.lock.yaml.
+# `at_stage`/`before` values name manifest stage ids; "*" means every
+# producing stage. Entries whose stage id is absent from the selected
+# workflow are skipped (e.g. a proposal run has no implement stage).
+#
+# `required_evidence` lists what the router must present at an approval
+# checkpoint, per the approval response pattern in the router skill.
+
+risk_levels:
+  low:
+    additional_validators: []
+    approval_checkpoints: []
+
+  medium:
+    additional_validators: []
+    approval_checkpoints: []
+    note: >
+      Ask for approval before starting only if assumptions in the REQUEST
+      CLASSIFICATION materially affect behavior; otherwise proceed and state
+      the assumptions.
+
+  high:
+    additional_validators:
+      - at_stage: implement
+        uses: validators/red-team
+        with:
+          checklist: policies/gates/security.md
+      - at_stage: deliver
+        uses: validators/completeness-check
+        with:
+          checklist: policies/gates/release.md
+      - at_stage: draft
+        uses: validators/adversarial-reviewer
+        with:
+          focus: "cost realism, downside scenarios, reversibility"
+    approval_checkpoints:
+      - before: implement
+    required_evidence: [rollback_plan, blast_radius]
+
+  critical:
+    additional_validators:
+      - at_stage: implement
+        uses: validators/red-team
+        with:
+          checklist: policies/gates/security.md
+      - at_stage: deliver
+        uses: validators/completeness-check
+        with:
+          checklist: policies/gates/release.md
+      - at_stage: "*"
+        uses: validators/persona-reviewer
+        with:
+          persona: "Deeply skeptical principal engineer assuming this change will cause an incident until proven otherwise"
+    approval_checkpoints:
+      - before: "*"
+    required_evidence: [rollback_plan, blast_radius, step_by_step_execution_plan]
+    note: >
+      Per the router skill: stop and request explicit human approval before
+      any producing stage runs. Recommend attaching
+      skillpacks/addyosmani/doubt-driven-development to the implement stage.

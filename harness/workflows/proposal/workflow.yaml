@@ -1,0 +1,111 @@
+# Proposal Delivery — proves the harness generalizes beyond software.
+# Reuses the intake stage verbatim from the SDLC workflow; the differences
+# are entirely in the manifest: different stages, validators, and knowledge
+# attachments. The research stage attaches both knowledge adapters at stage
+# level — detach either by deleting one line.
+
+manifest_version: "1.0"
+
+workflow:
+  id: proposal
+  name: "Proposal Delivery"
+  description: "Take a business/technical proposal request from framing through research, adversarially-reviewed drafting, and an audience-ready package."
+  intent:
+    summary: "Proposals, business cases, and recommendation documents that argue for a decision."
+    triggers:
+      - "write a proposal for ..."
+      - "build the business case for ..."
+      - "should we adopt ... - make the case"
+      - "draft a recommendation on ..."
+    signals: [proposal, business case, recommendation, pitch, budget, adopt, decision]
+    work_types:
+      - proposal
+      - idea-refinement
+
+inputs:
+  - name: request
+    description: "What the proposal must argue for or decide, verbatim from the requester."
+    format: markdown
+    required: true
+  - name: audience
+    description: "Who will read and judge the proposal (role, seniority, technical depth)."
+    format: text
+    required: true
+  - name: constraints
+    description: "Known constraints: budget ceilings, deadlines, mandated technologies, political realities."
+    format: markdown
+    required: false
+
+defaults:
+  gate:
+    max_repair_attempts: 2
+    on_exhaustion: escalate
+  producer_context: fresh
+
+knowledge: []
+
+stages:
+  - id: intake
+    uses: stages/intake
+    needs: []
+    inputs:
+      request: "workflow:request"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/requirements.md
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "ambiguity, missing acceptance criteria, hidden assumptions"
+    skills:
+      - uses: skillpacks/addyosmani/interview-me
+
+  - id: research
+    uses: stages/research
+    needs: [intake]
+    inputs:
+      requirements: "intake:requirements"
+    knowledge:
+      - uses: knowledge/enterprise-mcp
+      - uses: knowledge/second-brain
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "unsourced claims, cherry-picked evidence, options dismissed without evidence"
+    skills:
+      - uses: skillpacks/addyosmani/idea-refine
+
+  - id: draft
+    uses: stages/draft
+    needs: [research]
+    inputs:
+      requirements: "intake:requirements"
+      research_digest: "research:research_digest"
+      audience: "workflow:audience"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/adversarial-reviewer
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Skeptical CFO evaluating cost, risk, and ROI"
+    skills:
+      - uses: skillpacks/addyosmani/documentation-and-adrs
+
+  - id: finalize
+    uses: stages/finalize
+    needs: [draft]
+    inputs:
+      proposal_draft: "draft:proposal_draft"
+      audience: "workflow:audience"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/persona-reviewer
+        with:
+          persona: "The declared target audience, reading this cold with ten minutes before the decision meeting"
+
+outputs:
+  - name: final_proposal
+    from: "finalize:final_proposal"
+  - name: decision_brief
+    from: "finalize:decision_brief"

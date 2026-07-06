@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "validator-contract.schema.json",
+  "title": "Validator Contract (validator.md frontmatter)",
+  "description": "Machine contract of an independent validation task. The markdown body carries Mission, Method, Verdict format, and Independence rules.",
+  "type": "object",
+  "required": ["id", "summary", "agent", "verdict_file"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "summary": { "type": "string", "minLength": 1 },
+    "agent": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Persona in .claude/agents/ that executes this validation. Must never be a producer persona (linted)."
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "required"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "description": { "type": "string", "minLength": 1 },
+          "required": { "type": "boolean" }
+        }
+      },
+      "description": "Parameters accepted via the manifest's `with` block (e.g. persona, focus, checklist)."
+    },
+    "verdict_file": {
+      "const": "verdict.json",
+      "description": "Verdicts are always written as <validator-id>.verdict.json under validation/attempt-<n>/."
+    }
+  }
+}
