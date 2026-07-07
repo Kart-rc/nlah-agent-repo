@@ -1,0 +1,140 @@
+# Technical Decision — the Technology Director's core loop: frame the
+# decision, gather evidence, build an option matrix that is adversarially
+# validated BEFORE any winner exists, then make the call time-bound.
+# Two judgment stages (options, decide) by design: the matrix passes its own
+# gate while no choice anchors it, so weights cannot be reverse-engineered
+# to crown a favorite (see docs/future-workflows.md, Walkthrough 3).
+
+manifest_version: "1.0"
+
+workflow:
+  id: tech-decision
+  name: "Technical Decision"
+  description: "Take a technical decision from framing through evidence, an adversarially-validated option matrix, and a time-bound decision record."
+  intent:
+    summary: "Time-bound technical decisions between named options: the deliverable is the call itself, recorded with rationale, dissent, and revisit triggers - not a persuasion document (that is proposal)."
+    triggers:
+      - "should we use X or Y ..."
+      - "help me decide between ..."
+      - "we need to pick ... by <date>"
+      - "evaluate the options for ... and make the call"
+    signals: [decide, decision, options, trade-off, tradeoff, choose, versus, deadline, one-way door, commit]
+    work_types:
+      - technical-decision
+
+inputs:
+  - name: request
+    description: "The decision to be made, verbatim from the requester."
+    format: markdown
+    required: true
+  - name: audience
+    description: "Who will read and act on the decision record (role, seniority, technical depth)."
+    format: text
+    required: true
+  - name: decision_deadline
+    description: "When the call must be made; drives the confidence-vs-analysis trade."
+    format: text
+    required: false
+  - name: constraints
+    description: "Known constraints: budget ceilings, mandated technologies, political realities."
+    format: markdown
+    required: false
+
+defaults:
+  gate:
+    max_repair_attempts: 2
+    on_exhaustion: escalate
+  producer_context: fresh
+
+knowledge: []
+
+stages:
+  - id: intake
+    uses: stages/intake
+    needs: []
+    inputs:
+      request: "workflow:request"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/requirements.md
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "ambiguity, missing acceptance criteria, hidden assumptions, an undefined decision deadline"
+    skills:
+      - uses: skillpacks/addyosmani/interview-me
+
+  - id: research
+    uses: stages/research
+    needs: [intake]
+    inputs:
+      requirements: "intake:requirements"
+    knowledge:
+      - uses: knowledge/enterprise-mcp
+      - uses: knowledge/second-brain
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "unsourced claims, cherry-picked evidence, options dismissed without evidence"
+    skills:
+      - uses: skillpacks/addyosmani/idea-refine
+
+  - id: options
+    uses: stages/options
+    needs: [research]
+    inputs:
+      requirements: "intake:requirements"
+      research_digest: "research:research_digest"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "straw-man options, missing do-nothing option, weights reverse-engineered to force a winner, unpriced costs, reversibility misclassified"
+    skills:
+      - uses: skillpacks/tech-director/options-and-tradeoffs
+      - uses: skillpacks/addyosmani/idea-refine
+
+  - id: decide
+    uses: stages/decide
+    needs: [options]
+    inputs:
+      requirements: "intake:requirements"
+      option_matrix: "options:option_matrix"
+      decision_deadline: "workflow:decision_deadline"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/decision.md
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "rationale that does not follow from the matrix, dissent omitted or straw-manned, one-way doors treated as reversible, revisit triggers nobody can observe, deadline ignored"
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Principal engineer who championed the losing option and will re-litigate this decision in every forum unless the record answers them"
+    skills:
+      - uses: skillpacks/tech-director/timeboxed-decision-making
+      - uses: skillpacks/tech-director/executive-communication
+      - uses: skillpacks/addyosmani/documentation-and-adrs
+
+  - id: finalize
+    uses: stages/finalize
+    needs: [decide]
+    inputs:
+      proposal_draft: "decide:decision_record"
+      audience: "workflow:audience"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/persona-reviewer
+        with:
+          persona: "The declared target audience, reading this cold with ten minutes before the decision meeting"
+    skills:
+      - uses: skillpacks/tech-director/executive-communication
+
+outputs:
+  - name: decision_record
+    from: "decide:decision_record"
+  - name: final_decision
+    from: "finalize:final_proposal"
+  - name: decision_brief
+    from: "finalize:decision_brief"

@@ -1,9 +1,11 @@
 # Future Workflows
 
-The harness ships with `sdlc` and `proposal`. This document maps the router's
-full work-type taxonomy to workflows (existing and future) and walks through
-composing the two next candidates — **roadmap** and **LOE estimation** — to
-show that new workflows are compositions, not construction projects.
+The harness ships with `sdlc`, `proposal`, `tech-decision`, and
+`architecture-review`. This document maps the router's full work-type
+taxonomy to workflows (existing and future) and walks through composing new
+candidates — **roadmap** and **LOE estimation** in full, plus the shipped
+**tech-director family** and its remaining future members — to show that new
+workflows are compositions, not construction projects.
 
 ## Work type → workflow mapping
 
@@ -15,6 +17,8 @@ show that new workflows are compositions, not construction projects.
 | performance-cost-change | `sdlc` | + baseline/re-measure criteria via a `benchmark` stage |
 | refactor-simplification | `sdlc` | behavior-preservation `extra_check` on verify |
 | proposal, idea-refinement | `proposal` | — |
+| technical-decision | `tech-decision` | — |
+| architecture-review | `architecture-review` | — |
 | vague-requirement | clarify → route | — |
 | data-change | F7 → composer | `data-change`: sdlc stages + data gate checklists + backfill stage |
 | infrastructure-change | F7 → composer | `infra-change`: sdlc stages + security/observability checklists throughout |
@@ -25,6 +29,10 @@ show that new workflows are compositions, not construction projects.
 
 Until a dedicated workflow exists, the router offers the composer with the
 suggested composition above (failure class F7 — never guess-and-run).
+
+Note: `idea-refinement` stays with `proposal` when the ask is
+persuasion-shaped ("make the case for..."); decision-shaped asks with a
+nameable option set ("pick between X and Y") route to `tech-decision`.
 
 ## Walkthrough 1: composing a `roadmap` workflow
 
@@ -110,6 +118,35 @@ stages:
 ```
 
 Again: one new stage document, one manifest.
+
+## Walkthrough 3: the tech-director family (shipped and future)
+
+`tech-decision` and `architecture-review` shipped exactly per the pattern —
+intake and research verbatim, `finalize` as the shared packager, rigor from
+validator attachments (the decision gate checklist, a losing-option champion
+persona on `decide`, a system-owner persona on `assess`), and practice
+disciplines from the `skillpacks/tech-director/` pack.
+
+One deliberate deviation: `tech-decision` adds **two** judgment stages,
+`options` then `decide`, instead of one. Splitting them means the option
+matrix passes its own adversarial gate *before any winner exists* — weights
+cannot be reverse-engineered to crown a favorite, and a failed matrix repairs
+without re-litigating a decision. Still one *kind* of judgment per stage;
+a decision simply contains two judgments.
+
+Two family members remain future compositions (F7 → composer until built):
+
+- `org-alignment` — cross-org influence plans. intake → research (org
+  structure and history are the payload) → one new `align` stage (stakeholder
+  map with evidenced positions, minimum winning coalition, dated/owned
+  influence sequence, concessions, escalation criteria; persona gate: "VP of
+  a neighboring org whose roadmap this initiative disrupts") → finalize.
+  Attach `skillpacks/tech-director/influence-without-authority`.
+- `risk-register` — standalone risk work. intake → research (postmortems and
+  prior incidents as prior-art) → one new `risk-assess` stage (scored
+  register with owners, leading-indicator triggers, mitigations vs
+  contingencies, pre-mortem narratives) → finalize. Attach
+  `skillpacks/tech-director/risk-mitigation`.
 
 ## The pattern
 

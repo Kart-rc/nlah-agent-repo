@@ -79,6 +79,8 @@ routing):
 | observability-change | Logs, metrics, traces, dashboards, alerts, SLOs |
 | production-launch | Releases or rolls out to users/production |
 | proposal | Argues for a decision: business case, recommendation |
+| technical-decision | Chooses between named technical options and records the call, time-bound |
+| architecture-review | Judges an existing or proposed architecture with an evidence-cited verdict |
 
 ## Step 3: Classify risk level
 
@@ -124,7 +126,8 @@ The risk → validators/checkpoints mapping is data, not prose:
      current mapping in `docs/future-workflows.md`); never force a request
      through the wrong workflow.
 4. `vague-requirement` and `idea-refinement` route to intake-led workflows
-   (v1: `proposal` for decision-shaped asks; otherwise clarify first —
+   (v1: `proposal` for persuasion-shaped asks, `tech-decision` for
+   decision-shaped asks with a nameable option set; otherwise clarify first —
    intake exists to convert vagueness into requirements).
 
 ## Step 5: Collect inputs and initialize the run
