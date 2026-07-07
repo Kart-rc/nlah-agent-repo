@@ -91,6 +91,7 @@ stages:
           persona: "Skeptical CFO evaluating cost, risk, and ROI"
     skills:
       - uses: skillpacks/addyosmani/documentation-and-adrs
+      - uses: skillpacks/tech-director/influence-without-authority
 
   - id: finalize
     uses: stages/finalize
@@ -103,6 +104,8 @@ stages:
       - uses: validators/persona-reviewer
         with:
           persona: "The declared target audience, reading this cold with ten minutes before the decision meeting"
+    skills:
+      - uses: skillpacks/tech-director/executive-communication
 
 outputs:
   - name: final_proposal

@@ -37,6 +37,14 @@ risk_levels:
         uses: validators/adversarial-reviewer
         with:
           focus: "cost realism, downside scenarios, reversibility"
+      - at_stage: decide
+        uses: validators/persona-reviewer
+        with:
+          persona: "Independent senior director with no stake in either option, checking the decision is being made at the right level with the right people informed"
+      - at_stage: assess
+        uses: validators/red-team
+        with:
+          checklist: policies/gates/security.md
     approval_checkpoints:
       - before: implement
     required_evidence: [rollback_plan, blast_radius]

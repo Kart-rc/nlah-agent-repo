@@ -1,7 +1,8 @@
 # NLAH Magnetic Agentic Harness
 
 A **magnetic harness** for repeatable delivery work — software changes,
-proposals, and (soon) roadmaps and LOE estimates — built as a
+proposals, technical decisions, architecture reviews, and (soon) roadmaps
+and LOE estimates — built as a
 [Natural-Language Agent Harness](https://arxiv.org/abs/2603.25723): all control
 logic lives in editable natural-language documents, executed by Claude Code
 acting as the harness runtime. There is no orchestration code to maintain;
@@ -56,12 +57,12 @@ Critical work cannot start without explicit human approval.
 | `.claude/skills/agentic-delivery-router/` | Entry point: classify → select workflow → orchestrate |
 | `.claude/skills/workflow-composer/` | Create/modify workflow manifests (scaffold, lint, dry-run) |
 | `.claude/agents/` | Subagent personas: 3 producers, 4 validators (tool permissions = boundaries) |
-| `harness/workflows/` | Composed workflows: `sdlc`, `proposal` |
-| `harness/stages/` | Stage library (9 stages; `intake` is shared across workflows) |
+| `harness/workflows/` | Composed workflows: `sdlc`, `proposal`, `tech-decision`, `architecture-review` |
+| `harness/stages/` | Stage library (12 stages; `intake` is shared across workflows) |
 | `harness/validators/` | Validator library (4 types, parameterizable) |
 | `harness/knowledge/` | Knowledge adapters: `enterprise-mcp`, `second-brain` |
 | `harness/policies/` | Risk policy (risk → validators + approvals) and gate checklists |
-| `harness/skillpacks/` | Vendored practice skills (MIT, attributed) |
+| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed) + original `tech-director` (director judgment disciplines) |
 | `harness/schema/` | JSON Schemas — the SDK-ready contracts for every document type |
 | `scripts/harness_lint.py` | Validates schemas, cross-refs, validator coverage, topology |
 | `runs/` | Externalized run state (gitignored; resumable via `task_state.json`) |

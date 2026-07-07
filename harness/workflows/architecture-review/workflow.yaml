@@ -1,0 +1,120 @@
+# Architecture Review — judge a subject that already exists (design doc,
+# RFC, or codebase) and end with a decisive, evidence-cited verdict:
+# approve / approve-with-conditions / reject. Designing something new is
+# sdlc's design stage; arguing for a course of action is proposal. The
+# subject enters through the `subject` path input, bound directly into the
+# assess stage - research gathers external evidence and never judges.
+
+manifest_version: "1.0"
+
+workflow:
+  id: architecture-review
+  name: "Architecture Review"
+  description: "Review an existing or proposed architecture against requirements and prior art, and deliver a decisive, evidence-cited verdict."
+  intent:
+    summary: "Architecture and design reviews that end in a verdict: approve, approve-with-conditions, or reject - judging a subject that already exists, not designing a new one (that is sdlc's design stage)."
+    triggers:
+      - "review this architecture / design doc / RFC"
+      - "is this design sound"
+      - "assess the architecture of ..."
+      - "should we approve this design"
+    signals: [architecture, review, RFC, design doc, assess, verdict, approve, soundness]
+    work_types:
+      - architecture-review
+
+inputs:
+  - name: request
+    description: "What to review and against what bar, verbatim from the requester."
+    format: markdown
+    required: true
+  - name: subject
+    description: "Path to the architecture under review: a design doc, RFC, or codebase root."
+    format: path
+    required: true
+  - name: audience
+    description: "Who will read and act on the verdict (role, seniority, technical depth)."
+    format: text
+    required: true
+
+defaults:
+  gate:
+    max_repair_attempts: 2
+    on_exhaustion: escalate
+  producer_context: fresh
+
+knowledge: []
+
+stages:
+  - id: intake
+    uses: stages/intake
+    needs: []
+    inputs:
+      request: "workflow:request"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/requirements.md
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "ambiguity, missing review scope, an undefined quality bar, hidden assumptions"
+    skills:
+      - uses: skillpacks/addyosmani/interview-me
+
+  - id: research
+    uses: stages/research
+    needs: [intake]
+    inputs:
+      requirements: "intake:requirements"
+    knowledge:
+      - uses: knowledge/enterprise-mcp
+      - uses: knowledge/second-brain
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "unsourced claims, cherry-picked evidence, options dismissed without evidence"
+    skills:
+      - uses: skillpacks/addyosmani/idea-refine
+
+  - id: assess
+    uses: stages/assess
+    needs: [research]
+    inputs:
+      requirements: "intake:requirements"
+      subject: "workflow:subject"
+      research_digest: "research:research_digest"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/architecture.md
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "verdict hedging, conditions that are actually rejections, findings without evidence in the subject, failure modes asserted but not traced"
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Staff engineer who owns this system and must live with every condition in this verdict"
+    skills:
+      - uses: skillpacks/tech-director/architectural-judgement
+      - uses: skillpacks/addyosmani/documentation-and-adrs
+
+  - id: finalize
+    uses: stages/finalize
+    needs: [assess]
+    inputs:
+      proposal_draft: "assess:assessment_report"
+      audience: "workflow:audience"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/persona-reviewer
+        with:
+          persona: "The declared target audience, reading this cold with ten minutes before the decision meeting"
+    skills:
+      - uses: skillpacks/tech-director/executive-communication
+
+outputs:
+  - name: assessment_report
+    from: "assess:assessment_report"
+  - name: final_assessment
+    from: "finalize:final_proposal"
+  - name: decision_brief
+    from: "finalize:decision_brief"
