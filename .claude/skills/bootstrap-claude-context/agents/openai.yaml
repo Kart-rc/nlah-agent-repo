@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bootstrap Claude Context"
+  short_description: "Install layered Claude project context"
+  default_prompt: "Use $bootstrap-claude-context to prepare this repository for Claude Code."
