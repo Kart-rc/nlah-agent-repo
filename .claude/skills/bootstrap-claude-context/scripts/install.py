@@ -27,6 +27,10 @@ STABLE_ASSETS = (
     Path(".claude/skills/finish-session/SKILL.md"),
     Path(".claude/skills/review-learnings/SKILL.md"),
 )
+MANAGED_HOOK_ASSETS = (
+    Path(".claude/hooks/session-start.py"),
+    Path(".claude/hooks/session-end.py"),
+)
 
 
 def new_summary() -> dict[str, list[str]]:
@@ -143,6 +147,18 @@ def desired_hooks() -> dict[str, list[dict[str, Any]]]:
     return hooks
 
 
+def differing_managed_hooks(target: Path) -> set[Path]:
+    differing: set[Path] = set()
+    for relative_path in MANAGED_HOOK_ASSETS:
+        destination = target / relative_path
+        if (
+            destination.exists()
+            and destination.read_bytes() != (ASSET_ROOT / relative_path).read_bytes()
+        ):
+            differing.add(relative_path)
+    return differing
+
+
 def merge_settings(
     settings: dict[str, Any], hooks_to_add: dict[str, list[dict[str, Any]]]
 ) -> tuple[dict[str, Any] | None, bool, str | None]:
@@ -222,6 +238,15 @@ def plan_assets(target: Path, summary: dict[str, list[str]], apply: bool) -> Non
 
 
 def install(target: Path, apply: bool, summary: dict[str, list[str]]) -> bool:
+    differing_hooks = differing_managed_hooks(target)
+    if differing_hooks:
+        for relative_path in sorted(differing_hooks):
+            summary["warning"].append(
+                "different existing managed hook requires explicit reconciliation: "
+                f"{relative_name(relative_path)}"
+            )
+        return False
+
     settings_path = target / SETTINGS_PATH
     settings_existed = settings_path.exists()
     settings = load_settings(settings_path, summary)
@@ -254,10 +279,16 @@ def install(target: Path, apply: bool, summary: dict[str, list[str]]) -> bool:
 
 def validate_installation(target: Path, summary: dict[str, list[str]]) -> bool:
     valid = True
+    differing_hooks = differing_managed_hooks(target)
     for relative_path in STABLE_ASSETS:
         destination = target / relative_path
         name = relative_name(relative_path)
-        if destination.is_file():
+        if relative_path in differing_hooks:
+            summary["warning"].append(
+                f"installed managed hook differs from managed asset: {name}"
+            )
+            valid = False
+        elif destination.is_file():
             summary["preserve"].append(name)
         else:
             summary["warning"].append(f"missing installed file: {name}")

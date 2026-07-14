@@ -27,7 +27,8 @@ HOOKS = {
 TEXT_SUFFIXES = {".md", ".json", ".py", ".yaml", ".yml"}
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 SOURCE_MACHINE_ABSOLUTE_PATH = re.compile(
-    r"(?:/root(?:/|$)|/private/tmp(?:/|$)|/Users/[^/\s]+/|/home/[^/\s]+/|"
+    r"(?:/root(?:/|$)|/tmp(?:/|$)|/private/tmp(?:/|$)|/opt(?:/|$)|"
+    r"/Volumes(?:/|$)|/Users/[^/\s]+/|/home/[^/\s]+/|"
     r"[A-Za-z]:[\\/]+Users[\\/]+[^\\/\s]+[\\/])"
 )
 PLACEHOLDER_MARKER = re.compile(

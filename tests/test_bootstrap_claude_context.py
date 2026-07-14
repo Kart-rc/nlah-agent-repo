@@ -216,6 +216,51 @@ class BootstrapClaudeContextTests(unittest.TestCase):
                 set(claude_directory.iterdir()), {symlink_target, settings_path}
             )
 
+    def test_install_rejects_different_existing_hook_before_mutating_target(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            target = Path(temporary_directory)
+            hooks_directory = target / ".claude" / "hooks"
+            hooks_directory.mkdir(parents=True)
+            existing_hook = hooks_directory / "session-end.py"
+            existing_content = "raise SystemExit(7)\n"
+            existing_hook.write_text(existing_content, encoding="utf-8")
+
+            result = self.run_installer(target, "--apply")
+
+            self.assertNotEqual(result.returncode, 0)
+            summary = json.loads(result.stdout)
+            self.assertTrue(
+                any(
+                    "different existing managed hook" in warning
+                    and "session-end.py" in warning
+                    for warning in summary["warning"]
+                )
+            )
+            self.assertEqual(
+                existing_hook.read_text(encoding="utf-8"), existing_content
+            )
+            self.assertFalse((target / ".claude/settings.json").exists())
+            self.assertFalse((target / "CLAUDE.md").exists())
+
+    def test_validate_rejects_modified_managed_hook(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            target = Path(temporary_directory)
+            self.parse_summary(self.run_installer(target, "--apply"))
+            installed_hook = target / ".claude/hooks/session-end.py"
+            installed_hook.write_text("raise SystemExit(7)\n", encoding="utf-8")
+
+            result = self.run_installer(target, "--validate")
+
+            self.assertNotEqual(result.returncode, 0)
+            summary = json.loads(result.stdout)
+            self.assertTrue(
+                any(
+                    "installed managed hook differs" in warning
+                    and "session-end.py" in warning
+                    for warning in summary["warning"]
+                )
+            )
+
     def test_atomic_replacements_preserve_asset_and_existing_settings_modes(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             target = Path(temporary_directory)

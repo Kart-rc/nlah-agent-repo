@@ -32,7 +32,10 @@ class SourceMachinePathTests(unittest.TestCase):
 
         rejected = (
             "/root/project/skill.md",
+            "/tmp/alice/project/skill.md",
             "/private/tmp/evaluation/project/skill.md",
+            "/opt/workspace/project/skill.md",
+            "/Volumes/dev/repo/skill.md",
             "/Users/alice/project/skill.md",
             "/home/alice/project/skill.md",
             r"C:\Users\alice\project\skill.md",
