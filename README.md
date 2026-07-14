@@ -63,6 +63,7 @@ Critical work cannot start without explicit human approval.
 | `harness/knowledge/` | Knowledge adapters: `enterprise-mcp`, `second-brain` |
 | `harness/policies/` | Risk policy (risk → validators + approvals) and gate checklists |
 | `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed) + original `tech-director` (director judgment disciplines) |
+| [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) | Claude Code setup, handoff contract, and sequences for using practice skills without the harness |
 | `harness/schema/` | JSON Schemas — the SDK-ready contracts for every document type |
 | `scripts/harness_lint.py` | Validates schemas, cross-refs, validator coverage, topology |
 | `runs/` | Externalized run state (gitignored; resumable via `task_state.json`) |
