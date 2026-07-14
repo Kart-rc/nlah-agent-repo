@@ -113,7 +113,7 @@ A proposal must:
 - select the narrowest correct instruction layer and path scope;
 - search all existing layers for duplication and contradiction;
 - contain an exact proposed diff and expected benefit;
-- exclude secrets, personal preferences, guesses, and generated-file details;
+- exclude secrets, personal preferences, guesses, and unverified or transient generated-file details;
 - preserve handwritten instructions and the root file's size budget; and
 - remain pending until a developer explicitly approves it.
 

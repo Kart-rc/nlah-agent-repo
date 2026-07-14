@@ -9,8 +9,14 @@ For baseline and forward tests:
 1. Create a new standalone temporary directory for each run; do not use this repository as the agent's working directory.
 2. Copy only the fixture files defined by the scenario into that directory. Do not copy `docs/`, design documents, implementation plans, `tests/skill-evals/`, prior results, or any description of the target architecture.
 3. Invoke the capability under test from the controller. The evaluated agent may see the scenario fixture and its normal runtime entrypoint, but not the capability's source repository or design rationale.
-4. Start a fresh context with no forked conversation. Send the read-only/no-edit constraint and the exact prompt below—nothing about approval, scoring, layering, hooks, or expected failure.
-5. Capture the response and fixture diff. A non-empty baseline diff invalidates the run. Use a fresh fixture for every retry.
+4. Start a fresh context with no forked conversation. Send the exact prompt below—nothing about approval, scoring, layering, hooks, or expected failure. Baseline runs also receive a strict read-only/no-edit constraint. Forward runs use disposable fixtures and may create only artifacts authorized by the invoked capability or instruction changes explicitly approved during that run.
+5. Capture the response and complete fixture diff. A non-empty baseline diff invalidates the run. For forward runs, reject any mutation outside capability-authorized artifacts or an explicitly approved exact instruction diff. Use a fresh fixture for every retry.
+
+Because the baseline wrapper forbids edits, baseline approval scoring measures
+only explicit approval language and the proposed workflow; it cannot reveal
+whether an unconstrained agent would actually mutate files. Forward runs use
+disposable targets, so their scores additionally use observed before/after
+mutation evidence.
 
 ## Scoring anchors
 
