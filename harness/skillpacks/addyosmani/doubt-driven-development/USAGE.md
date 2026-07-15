@@ -34,13 +34,11 @@ spawns a fresh-context reviewer, which a producer subagent cannot do
 
 ### In a harness workflow
 
-Do not attach it to producer stages via the manifest — that places it inside
-a subagent, where SKILL.md permits only a degraded self-questioning fallback
-that must be flagged as such. Instead, the harness's validator stages
-(adversarial review per HARNESS.md §7.1) already institutionalize the DOUBT
-step; use this skill from the main session when orchestrating work outside a
-run, or when a decision arises mid-run that the workflow's validators will
-not see. If you nevertheless attach it, expect degraded-mode output only:
+Do not attach it to producer stages — that places it inside a subagent,
+where SKILL.md permits only a degraded self-questioning fallback flagged as
+such. The harness's validator stages already institutionalize the DOUBT step
+(HARNESS.md §7.1); use this skill from the main session instead. If you
+nevertheless attach it, expect degraded-mode output only:
 
 ```yaml
 # Not recommended — see SKILL.md → Loading Constraints before doing this.
@@ -69,13 +67,12 @@ standalone mode does not guarantee.
   (CLAIM → EXTRACT → DOUBT → RECONCILE → STOP) with the checklist filled in.
 - The reviewer receives ARTIFACT + CONTRACT only — never the CLAIM or the
   author's reasoning — and is prompted to find issues, not to validate.
-- In interactive sessions, a cross-model second opinion (Gemini/Codex CLI or
-  manual) is explicitly offered every cycle; in non-interactive contexts the
-  skip is announced. External CLIs run only with per-invocation user
-  authorization, via stdin, in a read-only sandbox.
-- Findings are classified in precedence order (contract misread, actionable,
-  trade-off, noise), and the loop stops at trivial findings, three cycles, or
-  user override — three unresolved cycles escalate to the user.
+- In interactive sessions a cross-model second opinion is explicitly offered
+  every cycle; in non-interactive contexts the skip is announced. External
+  CLIs run only with per-invocation authorization, via stdin, read-only.
+- Findings are classified by precedence (contract misread, actionable,
+  trade-off, noise); the loop stops at trivial findings, three cycles — then
+  escalate — or user override.
 - Misapplication signs: doubt theater (cycles with substantive findings but
   zero classified actionable), or rubber-stamping the reviewer without
   re-reading the artifact (see SKILL.md → Red Flags).
@@ -86,10 +83,9 @@ Request (main session, no formal run): "Add per-user caching to the session
 lookup — it's on the hot path and must be safe under concurrent refresh."
 
 The orchestrator reads SKILL.md and writes the CLAIM ("the cache is safe
-under concurrent token refresh") with why it matters. It extracts the ~40-line
-diff plus the contract (no stale session served after logout) and spawns a
-fresh-context reviewer with the adversarial prompt, ARTIFACT + CONTRACT only.
-The reviewer finds a check-then-act gap between invalidation and repopulation;
-the orchestrator classifies it actionable, fixes the ordering, re-loops once
-(trivial findings), offers a cross-model pass — user skips, acknowledged —
-and only then commits.
+under concurrent token refresh") with why it matters. It extracts the
+~40-line diff plus the contract (no stale session served after logout) and
+spawns a fresh-context reviewer with the adversarial prompt, ARTIFACT +
+CONTRACT only. The reviewer finds a check-then-act gap; the orchestrator
+classifies it actionable, fixes the ordering, re-loops once (trivial
+findings), offers a cross-model pass (user skips, acknowledged), and commits.

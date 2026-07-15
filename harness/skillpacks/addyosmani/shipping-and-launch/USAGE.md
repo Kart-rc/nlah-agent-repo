@@ -23,7 +23,7 @@ See SKILL.md → When to Use for the full criteria. Harness routing cues:
 - Runs the router tags as high delivery risk (data migrations,
   infrastructure changes): the staged-rollout and rollback sections are the
   risk-reduction mechanics.
-- For the underlying telemetry work (logs, metrics, traces) attach
+- For the underlying telemetry work attach
   `observability-and-instrumentation` at implement instead; this skill
   consumes those signals for launch-day monitoring.
 
@@ -66,18 +66,18 @@ standalone mode does not guarantee.
 - The producer works the pre-launch checklist section by section (code
   quality, security, performance, accessibility, infrastructure,
   documentation) and reports gaps rather than glossing over them.
-- Risky features get a feature-flag plan with an owner, expiration date,
-  and both flag states tested; the rollout follows the staged sequence
-  (staging → flag-off deploy → team → 5% canary → gradual → full) with the
-  decision-threshold table governing advance/hold/rollback.
+- Risky features get a feature-flag plan with an owner and expiration date;
+  the rollout follows the staged sequence (staging → flag-off deploy →
+  team → 5% canary → gradual → full) with the decision-threshold table
+  governing advance/hold/rollback.
 - A written rollback plan (trigger conditions, steps, database
   considerations, time-to-rollback) exists before any deploy, plus a
   first-hour post-launch verification routine.
-- Done means SKILL.md → Verification passes, before and after deploy; the
-  deliver artifacts land in `runs/<run-id>/`.
-- Misapplication signs (from SKILL.md → Red Flags): deploying without a
-  rollback plan, big-bang releases skipping staging, or nobody watching
-  the first hour.
+- Done means SKILL.md → Verification passes, both before and after deploy;
+  the deliver artifacts land in `runs/<run-id>/`.
+- Misapplication signs (SKILL.md → Red Flags): deploying without a rollback
+  plan, big-bang releases skipping staging, or nobody watching the first
+  hour.
 
 ## Worked example
 

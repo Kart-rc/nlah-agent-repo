@@ -9,8 +9,8 @@
 
 Extracts what the user actually wants (not what they think they should want)
 through a one-question-at-a-time interview — each question carrying the
-agent's own guess — until the agent reaches ~95% confidence and the user
-explicitly confirms a written restate of intent.
+agent's own guess — until ~95% confidence is reached and the user explicitly
+confirms a written restate of intent.
 
 ## When to invoke
 
@@ -22,10 +22,9 @@ routing cues:
 - Explicit user invocations: "interview me", "grill me", "are we sure?",
   "stress-test my thinking".
 - Every shipped workflow starts with it at intake, so the router rarely
-  needs to add it — but detach it (or expect degraded behavior) for
-  non-interactive runs: SKILL.md → Loading Constraints forbids using it
-  where no live user can answer, and the producer must flag the gap as a
-  blocker instead of guessing.
+  needs to add it — but detach it for non-interactive runs: SKILL.md →
+  Loading Constraints forbids use where no live user can answer; the
+  producer must flag the gap as a blocker instead of guessing.
 - Skip for unambiguous self-contained asks, pure information requests, and
   mechanical operations (per SKILL.md).
 
@@ -71,13 +70,12 @@ standalone mode does not guarantee.
   own guess attached (SKILL.md → The Process).
 - Sophistication-signaling answers ("scalable", "clean") get probed with
   "what would you actually want if you didn't have to justify it?".
-- The deliverable is a confirmed statement of intent: a 6-line restate
+- The deliverable is a confirmed statement of intent: a six-line restate
   (Outcome / User / Why now / Success / Constraint / Out of scope) plus an
-  explicit "yes" — in a harness run it lands in the intake artifact under
-  `runs/<run-id>/`.
-- Downstream stages consume the confirmed intent, not the original ask;
-  handoffs to `idea-refine` or `spec-driven-development` are framed on it.
-- Misapplication signs (from SKILL.md → Red Flags): three or more questions
+  explicit "yes" — landing in the intake artifact under `runs/<run-id>/`.
+- Downstream stages and skills (`idea-refine`, `spec-driven-development`)
+  consume the confirmed intent, not the original ask.
+- Misapplication signs (SKILL.md → Red Flags): three or more questions
   batched in one message, a question with no guess attached, or accepting
   "whatever you think is best" as a terminal answer.
 

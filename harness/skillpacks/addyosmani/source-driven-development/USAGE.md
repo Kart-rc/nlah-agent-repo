@@ -19,19 +19,18 @@ routing cues:
 
 - Implement stages building framework-heavy code where the recommended
   approach matters: forms, routing, data fetching, state management, auth.
-- Requests that ask for "current best practices", "documented", "verified",
-  or "correct" implementations — or boilerplate/starter code that will be
-  copied across the project.
-- Runs against fast-moving frameworks (React, Next.js, Django...) where
+- Requests asking for "current best practices", "documented", "verified",
+  or "correct" implementations — or boilerplate that will be copied across
+  the project.
+- Runs against fast-moving frameworks (React, Next.js, Django) where
   training-data patterns are likely stale or deprecated.
 - Skip for version-independent work (renames, typo fixes, pure logic) or
   when the user explicitly wants speed over verification (per SKILL.md).
 
 **Default attachments:** none — ad hoc: attach it explicitly on the
 `implement` stage of the `sdlc` workflow when the change is
-framework-specific and correctness matters; it complements (not replaces)
-the stage's default `incremental-implementation` and
-`test-driven-development`.
+framework-specific and correctness matters; it complements the stage's
+default `incremental-implementation` and `test-driven-development`.
 
 ## How to invoke
 
@@ -65,23 +64,21 @@ standalone mode does not guarantee.
 
 ## What to expect
 
-- The producer opens with a "STACK DETECTED" statement naming exact versions
-  from the dependency file, and asks rather than guesses when versions are
-  ambiguous. Note the producer needs fetch access to documentation sites;
-  without network access the skill degrades to flagging patterns as
-  unverified.
-- It fetches the specific docs page for each feature (never the homepage),
+- The producer opens with a "STACK DETECTED" statement naming exact
+  versions from the dependency file, asking rather than guessing when
+  versions are ambiguous. It needs fetch access to documentation sites;
+  without network access it degrades to flagging patterns as unverified.
+- It fetches the specific docs page per feature (never the homepage),
   citing only official docs, official blogs/changelogs, web standards
   references, or compatibility tables — never Stack Overflow or tutorials.
-- Delivered code carries full-URL citations in comments for
-  framework-specific decisions, and anything uncheckable is explicitly
-  marked "UNVERIFIED" instead of hedged.
-- Conflicts — docs vs. existing project code, or docs vs. docs — are
-  surfaced as explicit options for a human to pick, not silently resolved.
+- Delivered code carries full-URL citations for framework-specific
+  decisions; anything uncheckable is marked "UNVERIFIED", not hedged.
+- Conflicts — docs vs. existing code, or docs vs. docs — are surfaced as
+  explicit options for a human to pick, not silently resolved.
 - Done means SKILL.md → Verification passes: versions identified, sources
-  official, no deprecated APIs, conflicts surfaced.
-- Misapplication signs (from SKILL.md → Red Flags): "I believe this API..."
-  instead of a citation, or code shipped without reading `package.json`.
+  official, no deprecated APIs, conflicts surfaced. Misapplication signs
+  (SKILL.md → Red Flags): "I believe this API..." instead of a citation, or
+  code shipped without reading `package.json`.
 
 ## Worked example
 

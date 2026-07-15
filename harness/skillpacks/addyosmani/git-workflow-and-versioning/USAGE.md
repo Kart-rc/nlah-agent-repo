@@ -8,16 +8,14 @@
 ## What it does
 
 Disciplines version control as the safety net for agent-speed development:
-trunk-based flow with short-lived branches, small atomic commits with
-why-focused messages, the save-point pattern (commit each verified slice),
-and a versioning contract for consumers — semantic versions, immutable tags,
-and human-curated changelogs.
+trunk-based flow, small atomic commits with why-focused messages, the
+save-point pattern (commit each verified slice), and a versioning contract
+for consumers — semantic versions, immutable tags, curated changelogs.
 
 ## When to invoke
 
-- SKILL.md → When to Use says "always — every code change flows through
-  git", so any builder-persona stage that commits to the target repo is a
-  candidate; attach it where commit hygiene matters most.
+- SKILL.md → When to Use says "always"; any builder-persona stage committing
+  to the target repo is a candidate — attach it where hygiene matters most.
 - The implement stage of a feature or fix run, so work lands as reviewable
   atomic commits with change summaries rather than one giant diff.
 - Release work: cutting a version, choosing the semver bump, tagging, or
@@ -84,10 +82,9 @@ standalone mode does not guarantee.
 Request: "Add CSV task import and cut the 1.4.0 release of the client
 library."
 
-The router runs `sdlc`; attach this skill to `implement` and `deliver`
-(snippet above, once per stage). The builder works on
-`feature/csv-import`, landing four commits — parser, endpoint wiring, UI,
-tests — each after a green test run, then posts the CHANGES MADE / DIDN'T
-TOUCH / CONCERNS summary. The deliver stage judges the change additive
-(minor bump), tags `v1.4.0` with the version derived from the tag, and adds
-the changelog entry under `### Added` phrased around user impact.
+The router runs `sdlc`; attach this skill to `implement` and `deliver`. The
+builder works on `feature/csv-import`, landing four commits — parser,
+endpoint wiring, UI, tests — each after a green test run, then posts the
+CHANGES MADE / DIDN'T TOUCH / CONCERNS summary. The deliver stage judges the
+change additive (minor bump), tags `v1.4.0` with the version derived from
+the tag, and adds the changelog entry under `### Added` by user impact.

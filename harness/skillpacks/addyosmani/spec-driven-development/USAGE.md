@@ -25,10 +25,9 @@ routing cues:
   faster", "modernize this").
 - Runs about to make an architectural decision that should be pinned down
   in writing before implementation.
-- Skip single-line fixes and typo-level changes (per SKILL.md). Note its
-  Plan and Tasks phases defer to `planning-and-task-breakdown` as the
-  canonical source — in the sdlc workflow those phases belong to the
-  separate plan stage.
+- Skip single-line fixes and typo-level changes (per SKILL.md). Its Plan
+  and Tasks phases defer to `planning-and-task-breakdown` as canonical — in
+  the sdlc workflow those phases belong to the separate plan stage.
 
 **Default attachments:** suggested by `stages/intake` and `stages/design`
 `skill_refs`; attached to the `intake` stage (alongside `interview-me`) and
@@ -70,19 +69,18 @@ standalone mode does not guarantee.
 - The producer opens with an "ASSUMPTIONS I'M MAKING" block and asks
   clarifying questions before writing spec content; vague requirements come
   back reframed as measurable success criteria.
-- The spec document covers the six core areas — Objective, Commands,
-  Project Structure, Code Style, Testing Strategy, and the three-tier
-  Boundaries (Always / Ask first / Never) — using SKILL.md's template.
+- The spec covers the six core areas — Objective, Commands, Project
+  Structure, Code Style, Testing Strategy, and the three-tier Boundaries
+  (Always / Ask first / Never) — using SKILL.md's template.
 - Phases are gated on human review: in a harness run, the workflow's
-  approval gates enforce the human sign-off SKILL.md requires between
-  Specify, Plan, Tasks, and Implement.
+  approval gates enforce the sign-off SKILL.md requires between phases.
 - The spec is a living artifact: scope or decision changes update it first;
   in a harness run it lives under `runs/<run-id>/` as the stage artifact
-  that plan and implement stages consume.
+  the plan and implement stages consume.
 - Done means SKILL.md → Verification passes: six areas covered, human
   approval given, success criteria specific and testable, spec saved.
-- Misapplication signs (from SKILL.md → Red Flags): code starting before
-  any written requirements, or features appearing that no spec mentions.
+- Misapplication signs (SKILL.md → Red Flags): code starting before any
+  written requirements, or features appearing that no spec mentions.
 
 ## Worked example
 

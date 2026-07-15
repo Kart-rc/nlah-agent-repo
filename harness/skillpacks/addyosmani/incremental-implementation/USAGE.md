@@ -17,10 +17,9 @@ See SKILL.md → When to Use / When NOT to use for the full criteria. Harness
 routing cues:
 
 - Any feature or bug-fix run whose implement stage will touch more than one
-  file — for the sdlc workflow this is the default, so it is already attached.
+  file — for the sdlc workflow this is the default, so it is already there.
 - Requests phrased as "build", "implement", "add feature", or "refactor"
-  where the producer would otherwise be tempted to land everything in one
-  large diff.
+  where the producer would otherwise land everything in one large diff.
 - Runs with a task breakdown from `planning-and-task-breakdown`: this skill
   is the execution discipline that consumes those tasks slice by slice.
 - Skip it only for single-file, single-function changes where scope is
@@ -63,24 +62,24 @@ standalone mode does not guarantee.
 ## What to expect
 
 - The producer (a `builder` persona modifying the target repo per its stage
-  contract) works the increment cycle: implement → test → verify → commit,
+  contract) works the increment cycle — implement → test → verify → commit —
   one slice at a time, choosing a slicing strategy (vertical, contract-first,
   or risk-first) per SKILL.md.
 - Commit history becomes a sequence of small, individually revertable
   commits, each leaving build and tests green — not one large drop.
-- Out-of-scope issues the producer notices are recorded as "noticed but not
-  touching" notes instead of being fixed opportunistically.
+- Out-of-scope issues get recorded as "noticed but not touching" notes
+  instead of being fixed opportunistically.
 - Done means SKILL.md → Verification passes: every increment tested and
   committed, full suite green, clean build, no uncommitted changes.
-- Misapplication signs (from SKILL.md → Red Flags): 100+ lines written
-  without running tests, unrelated changes mixed into one increment, or a
-  broken build between slices.
+- Misapplication signs (SKILL.md → Red Flags): 100+ lines written without
+  running tests, unrelated changes mixed into one increment, or a broken
+  build between slices.
 
 ## Worked example
 
 Request: "Add CSV export to the reports page (API endpoint + download
-button + tests)." The router classifies this as an sdlc feature; the shipped
-manifest already attaches this skill to `implement`:
+button + tests)." The router classifies this as an sdlc feature; the
+shipped manifest already attaches this skill to `implement`:
 
 ```yaml
   - id: implement

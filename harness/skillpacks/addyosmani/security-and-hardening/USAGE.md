@@ -20,11 +20,11 @@ See SKILL.md → When to Use for the full criteria. Harness routing cues:
   authorization, sensitive data storage, file uploads, webhooks, payments,
   or third-party integrations.
 - Requests the router tags as elevated delivery risk for security reasons —
-  this skill is the natural companion to a security risk overlay.
+  the natural companion to a security risk overlay.
 - Any run adding LLM-backed features (chatbots, agents, RAG): the skill's
   AI/LLM section treats model output as untrusted input.
-- Also useful on a verification stage as review discipline: its Security
-  Review Checklist gives a validator concrete gates to check against.
+- Also useful on a verification stage: its Security Review Checklist gives
+  a validator concrete gates to check against.
 
 **Default attachments:** none — ad hoc: attach it explicitly on the
 `implement` stage of the `sdlc` workflow when the work touches a trust
@@ -64,22 +64,19 @@ standalone mode does not guarantee.
 ## What to expect
 
 - The producer starts by naming trust boundaries and assets and running a
-  quick STRIDE pass, writing abuse cases next to use cases before coding
-  (SKILL.md → Process: Threat Model First).
+  quick STRIDE pass, writing abuse cases next to use cases before coding.
 - "Ask first" items — new auth flows, new sensitive-data categories, CORS
-  changes, file uploads — surface as explicit approval requests instead of
-  being silently implemented; in a harness run these route through the
-  workflow's approval gates.
-- Input validation lands at system boundaries (schema validation), queries
-  are parameterized, secrets stay in the environment, and `npm audit`
-  findings get triaged via the skill's decision tree rather than ignored.
-- For AI features, model output is validated and encoded before use, and
-  secrets/cross-tenant data are kept out of prompts.
+  changes, file uploads — surface as explicit approval requests; in a
+  harness run these route through the workflow's approval gates.
+- Input validation lands at system boundaries, queries are parameterized,
+  secrets stay in the environment, and `npm audit` findings get triaged via
+  the skill's decision tree rather than ignored; for AI features, model
+  output is validated and encoded before use.
 - Done means SKILL.md → Verification passes (no critical/high audit
-  findings, authz on every protected endpoint, no SSRF-able fetches...);
-  the pack's `references/security-checklist.md` holds the detailed list.
-- Misapplication signs (from SKILL.md → Red Flags): user input concatenated
-  into queries or HTML, or endpoints shipping without authorization checks.
+  findings, authz on every protected endpoint, no SSRF-able fetches); the
+  pack's `references/security-checklist.md` holds the detailed list.
+- Misapplication signs (SKILL.md → Red Flags): user input concatenated into
+  queries or HTML, or endpoints shipping without authorization checks.
 
 ## Worked example
 

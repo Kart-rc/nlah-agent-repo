@@ -7,11 +7,10 @@
 
 ## What it does
 
-Enforces production-quality UI construction: composable component
-architecture, the simplest adequate state management, WCAG 2.1 AA
-accessibility, mobile-first responsive layouts, and explicit loading/error/
-empty states — while actively steering away from the recognizable
-"AI aesthetic" toward the project's real design system.
+Enforces production-quality UI construction: composable components, the
+simplest adequate state management, WCAG 2.1 AA accessibility, mobile-first
+responsive layouts, and explicit loading/error/empty states — steering away
+from the recognizable "AI aesthetic" toward the project's design system.
 
 ## When to invoke
 

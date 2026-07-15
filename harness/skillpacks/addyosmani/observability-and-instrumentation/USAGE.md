@@ -28,8 +28,8 @@ See SKILL.md → When to Use / NOT for the full criteria. Harness routing cues:
 
 **Default attachments:** none — ad hoc: attach it explicitly where the work
 produces production-facing code, most naturally alongside the defaults on
-the `implement` stage of the `sdlc` workflow (instrumentation is written
-with the feature), or on `verify` when auditing existing telemetry.
+the `implement` stage of the `sdlc` workflow, or on `verify` when auditing
+existing telemetry.
 
 ## How to invoke
 
@@ -64,26 +64,25 @@ standalone mode does not guarantee.
 ## What to expect
 
 - Before touching code, the producer writes down 2–4 questions an on-call
-  engineer will ask about the feature; every signal added must map to one
-  (SKILL.md → Process step 1).
+  engineer will ask; every signal added must map to one (SKILL.md →
+  Process step 1).
 - Logs become structured JSON events with stable names and a correlation ID
   on every line; secrets and PII are excluded by allowlisting fields.
-- New endpoints and external dependencies get RED metrics with
-  small-fixed-set labels and latency histograms (percentiles, not averages).
-- Any new alerts are symptom-based, actionable, runbook-linked, and
-  test-fired once.
+- New endpoints and external dependencies get RED metrics with bounded
+  label sets and latency histograms (percentiles, not averages); new alerts
+  are symptom-based, runbook-linked, and test-fired once.
 - Done means SKILL.md → Verification passes, including locating an induced
-  staging failure via telemetry alone; the at-a-glance list is in the pack's
+  staging failure via telemetry alone; the at-a-glance list is the pack's
   `references/observability-checklist.md`.
-- Misapplication signs (from SKILL.md → Red Flags): a PR adding retries or
+- Misapplication signs (SKILL.md → Red Flags): a PR adding retries or
   external calls with zero new telemetry, or metrics labeled with user IDs
   or raw URLs (cardinality bomb).
 
 ## Worked example
 
 Request: "Add a payment-retry mechanism to checkout — and make sure we can
-actually see what it's doing in prod." Use `workflow-composer` to add this
-skill to the sdlc `implement` stage for the run:
+see what it's doing in prod." Use `workflow-composer` to add this skill to
+the sdlc `implement` stage for the run:
 
 ```yaml
   - id: implement
@@ -97,4 +96,4 @@ The builder first records the on-call questions ("what fraction succeed
 after retry?", "why do permanent failures happen?"), then ships the retry
 logic with `payment_failed` structured events, RED metrics on the provider
 call, and one symptom-based alert — verifying the telemetry by forcing a
-failure in staging and finding it by `requestId`.
+staging failure and finding it by `requestId`.

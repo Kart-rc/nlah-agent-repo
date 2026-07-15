@@ -15,8 +15,7 @@ agents inherit the reasoning behind decisions.
 ## When to invoke
 
 - A run makes a significant, expensive-to-reverse technical choice — the
-  `tech-decision` and `architecture-review` workflows attach it for exactly
-  this, so their written decisions land as proper ADRs.
+  `tech-decision` and `architecture-review` workflows attach it for this.
 - A delivery adds or changes a public API and needs typed documentation, or
   ships user-facing behavior that needs a changelog entry.
 - The request is documentation itself: "write up why we chose X", "document
@@ -70,10 +69,8 @@ standalone mode does not guarantee.
   superseded ADRs are kept and referenced, never deleted.
 - Inline comments explain intent and gotchas only; comments that restate the
   code, commented-out code, and lingering TODOs are removed.
-- Public API functions gain parameter/return/throws documentation (or
-  OpenAPI definitions for REST endpoints).
-- Shipped features get curated changelog entries and README updates covering
-  quick start, commands, and architecture pointers.
+- Public APIs gain parameter/return/throws docs (or OpenAPI for REST), and
+  shipped features get curated changelog entries and README updates.
 - Done matches SKILL.md → Verification: ADRs for all significant decisions,
   documented gotchas, current rules files, no commented-out code.
 - Misapplication signs: docs that restate the code instead of explaining
@@ -85,10 +82,9 @@ Request: "Should we move task search to Elasticsearch or stay on Postgres
 full-text? Decide and record it."
 
 The router runs the `tech-decision` workflow; its `decide` stage already
-carries this skill. After research and options stages, the decide producer
-reads SKILL.md and writes `runs/<run-id>/decide/adr-007-task-search.md`:
-Status Accepted, the load and ops-capacity context, the decision to stay on
-Postgres full-text, Elasticsearch and Meilisearch as rejected alternatives
-with reasons, and consequences (no new infra; revisit past 10M tasks). The
-finalize stage then communicates a decision future agents can find instead
-of re-litigating.
+carries this skill. The decide producer reads SKILL.md and writes
+`runs/<run-id>/decide/adr-007-task-search.md`: Status Accepted, the load and
+ops-capacity context, the decision to stay on Postgres full-text,
+Elasticsearch and Meilisearch as rejected alternatives with reasons, and
+consequences (no new infra; revisit past 10M tasks). The finalize stage then
+communicates a decision future agents can find instead of re-litigating.

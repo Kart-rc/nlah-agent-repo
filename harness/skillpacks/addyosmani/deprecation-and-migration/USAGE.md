@@ -82,11 +82,9 @@ standalone mode does not guarantee.
 Request: "We have two task services — retire `LegacyTaskService` and move all
 callers to `NewTaskService`."
 
-The router runs `sdlc`; attach this skill to `plan` and `implement` (snippet
-above). The plan producer answers the decision questions (11 consumers,
-replacement already in production), chooses advisory deprecation with a
-feature-flag migration, and drafts the notice plus migration guide into
-`runs/<run-id>/plan/`. The implement stage flips consumers one at a time
-behind `new-task-service` flags; the final commit removes the legacy class,
-its tests, and the notice once logs show zero calls for the observation
-window.
+The router runs `sdlc`; attach this skill to `plan` and `implement`. The
+plan producer answers the decision questions (11 consumers, replacement in
+production), picks advisory deprecation via feature flags, and drafts the
+notice and migration guide into `runs/<run-id>/plan/`. The implement stage
+flips consumers one at a time behind `new-task-service` flags; the final
+commit removes the legacy class, tests, and notice at verified zero usage.

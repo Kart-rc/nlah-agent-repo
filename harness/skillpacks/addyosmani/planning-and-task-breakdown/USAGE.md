@@ -64,23 +64,24 @@ standalone mode does not guarantee.
   spec and codebase, maps the dependency graph, and slices vertically so
   each task delivers working end-to-end functionality.
 - Every task follows SKILL.md's structure — description, acceptance
-  criteria, verification commands, dependencies, files likely touched, and
-  a size estimate — with anything L-or-larger broken down further.
-- Checkpoints appear after every 2–3 tasks, and high-risk tasks are ordered
-  early; parallelization opportunities are called out explicitly.
+  criteria, verification commands, dependencies, files likely touched, size
+  estimate — with anything L-or-larger broken down further.
+- Checkpoints appear after every 2–3 tasks, high-risk tasks come early, and
+  parallelization opportunities are called out explicitly.
 - SKILL.md names `tasks/plan.md` and `tasks/todo.md` as its output
   convention; in a harness run the planner writes these documents into the
   stage's artifact directory under `runs/<run-id>/` instead.
 - Done means SKILL.md → Verification passes: every task has acceptance
   criteria and a verification step, dependencies are ordered, no task
   touches more than ~5 files, and a human has approved the plan.
-- Misapplication signs (from SKILL.md → Red Flags): tasks that just say
+- Misapplication signs (SKILL.md → Red Flags): tasks that just say
   "implement the feature", all tasks XL-sized, or no checkpoints.
 
 ## Worked example
 
-Request: "Add multi-tenant workspaces to the app" with a validated spec from
-the design stage. The shipped sdlc manifest already attaches this skill:
+Request: "Add multi-tenant workspaces to the app", with a validated spec
+from the design stage. The shipped sdlc manifest already attaches this
+skill:
 
 ```yaml
   - id: plan

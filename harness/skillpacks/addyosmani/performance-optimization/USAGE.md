@@ -9,16 +9,16 @@
 
 Enforces measure-first performance work: establish a baseline, identify the
 actual bottleneck, fix that specific thing, measure again, then guard against
-regression — with Core Web Vitals targets, common anti-pattern fixes, and
-performance budgets as the reference material.
+regression — with Core Web Vitals targets, anti-pattern fixes, and
+performance budgets as reference material.
 
 ## When to invoke
 
 See SKILL.md → When to Use / When NOT to use for the full criteria. Harness
 routing cues:
 
-- Bug-fix or feature runs whose acceptance criteria include numbers: load
-  time budgets, response-time SLAs, Core Web Vitals thresholds.
+- Runs whose acceptance criteria include numbers: load-time budgets,
+  response-time SLAs, Core Web Vitals thresholds.
 - Requests phrased as "X is slow", "improve our Lighthouse score", "this
   endpoint times out", "I think that change caused a regression".
 - Runs building features that handle large datasets or high traffic, where
@@ -64,16 +64,16 @@ standalone mode does not guarantee.
 ## What to expect
 
 - The producer measures before changing anything, using the symptom-driven
-  decision tree in SKILL.md → Where to Start Measuring to pick the first
-  measurement, and both synthetic and RUM data where applicable.
+  tree in SKILL.md → Where to Start Measuring, with both synthetic and RUM
+  data where applicable.
 - Fixes target a named bottleneck (N+1 query, unbounded fetch, oversized
-  bundle, unnecessary re-renders...) rather than shotgun micro-optimization.
+  bundle, unnecessary re-renders) rather than shotgun micro-optimization.
 - The stage output includes specific before/after numbers and, where
   configured, a CI guard (bundle-size check, Lighthouse CI) so the win
   doesn't silently regress.
 - Done means SKILL.md → Verification passes: bottleneck identified and
   addressed, Web Vitals in "Good" thresholds, existing tests still green.
-- Misapplication signs (from SKILL.md → Red Flags): optimization with no
+- Misapplication signs (SKILL.md → Red Flags): optimization with no
   profiling data to justify it, or `React.memo`/`useMemo` sprinkled
   everywhere as reassurance.
 
