@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review-Debt Code Review"
+  short_description: "Review changes for hidden human review burden"
+  default_prompt: "Use $review-debt-code-review to review this change for review debt and provide evidence-backed next actions."

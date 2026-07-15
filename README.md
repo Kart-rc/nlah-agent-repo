@@ -18,7 +18,7 @@ apart with a one-line manifest edit**:
 | **Stage** | `harness/stages/` | A unit of producer work with a contract: inputs, outputs, acceptance criteria |
 | **Validator** | `harness/validators/` | An independent judgment task (adversarial review, red team, persona review, completeness) |
 | **Knowledge adapter** | `harness/knowledge/` | An attachable knowledge source (enterprise MCP, second brain) |
-| **Practice skill** | `harness/skillpacks/` | An engineering discipline the producer reads first (vendored [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)) |
+| **Practice skill** | `harness/skillpacks/` | An engineering discipline the producer reads first (vendored and first-party packs) |
 
 A workflow is just a `workflow.yaml` manifest listing which modules attach
 where. Adding, removing, reordering, or swapping any module never requires
@@ -83,10 +83,10 @@ is needed.
 
 ### 3. Use practice skills standalone (no harness)
 
-The 34 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
-geoffreylitt packs) work directly in Claude Code — either loaded by path from
-this repo or installed once into `~/.claude/skills/` for `/skill-name`
-invocation across projects.
+The 35 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
+geoffreylitt, and review-debt packs) work directly in Claude Code — either
+loaded by path from this repo or installed once into `~/.claude/skills/` for
+`/skill-name` invocation across projects.
 [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) provides
 the setup, a manual invocation contract, and per-task sequences (feature, bug
 fix, technical decision, architecture review, people/org work).
@@ -125,7 +125,7 @@ Critical work cannot start without explicit human approval.
 | `harness/validators/` | Validator library (4 types, parameterizable) |
 | `harness/knowledge/` | Knowledge adapters: `enterprise-mcp`, `second-brain` |
 | `harness/policies/` | Risk policy (risk → validators + approvals) and gate checklists |
-| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), `geoffreylitt` (understanding AI-written code, adapted from Geoffrey Litt's talk) |
+| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), `geoffreylitt` (understanding AI-written code), and `review-debt` (evidence-backed code-review burden) |
 | [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) | Claude Code setup, handoff contract, and sequences for using practice skills without the harness |
 | `harness/schema/` | JSON Schemas — the SDK-ready contracts for every document type |
 | `scripts/harness_lint.py` | Validates schemas, cross-refs, validator coverage, topology |
@@ -141,3 +141,6 @@ Critical work cannot start without explicit human approval.
   gates, and approval discipline merged into the harness-native router skill.
 - **addyosmani/agent-skills**: 24 practice skills vendored as an attachable
   skill pack.
+- **review-debt**: first-party code-review guidance adapted from Sachin Gupta's
+  “Your Coding Agent Is Creating Review Debt” talk, focused on reviewability
+  and human understanding without penalizing AI assistance.
