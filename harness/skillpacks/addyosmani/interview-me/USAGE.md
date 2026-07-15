@@ -22,9 +22,9 @@ routing cues:
 - Explicit user invocations: "interview me", "grill me", "are we sure?",
   "stress-test my thinking".
 - Every shipped workflow starts with it at intake, so the router rarely
-  needs to add it — but detach it for non-interactive runs: SKILL.md →
-  Loading Constraints forbids use where no live user can answer; the
-  producer must flag the gap as a blocker instead of guessing.
+  adds it — but detach it for non-interactive runs: SKILL.md → Loading
+  Constraints forbids use where no live user can answer (the producer
+  flags the gap as a blocker instead of guessing).
 - Skip for unambiguous self-contained asks, pure information requests, and
   mechanical operations (per SKILL.md).
 
@@ -65,11 +65,10 @@ standalone mode does not guarantee.
 
 ## What to expect
 
-- The producer opens with a one-sentence hypothesis plus an honest
-  confidence number, then asks exactly one question per turn, each with its
-  own guess attached (SKILL.md → The Process).
-- Sophistication-signaling answers ("scalable", "clean") get probed with
-  "what would you actually want if you didn't have to justify it?".
+- The producer opens with a hypothesis plus an honest confidence number,
+  then asks one question per turn, each with its own guess attached
+  (SKILL.md → The Process); sophistication-signaling answers ("scalable",
+  "clean") get probed for the real want.
 - The deliverable is a confirmed statement of intent: a six-line restate
   (Outcome / User / Why now / Success / Constraint / Out of scope) plus an
   explicit "yes" — landing in the intake artifact under `runs/<run-id>/`.
@@ -94,6 +93,5 @@ run; the shipped manifest attaches this skill at intake:
 
 The intake producer hypothesizes ("standup status check, ~30% confidence"),
 asks one question at a time, and discovers — as in SKILL.md's own example —
-that the real need is a personal experiment list, not a dashboard. The
-confirmed restate (with an Out-of-scope line) becomes the intake artifact
-that the design stage specs against.
+the real need is a personal experiment list, not a dashboard. The confirmed
+restate (with its Out-of-scope line) is the artifact design specs against.

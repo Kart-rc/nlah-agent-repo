@@ -21,11 +21,10 @@ SKILL.md has no "When to Use" section, so route on these cues:
   open: several plausible directions, none yet compared.
 - The router classified the work as a tech decision, architecture review,
   or proposal — their research/options stages widen the option space.
-- Do not attach it when requirements are already concrete enough to spec
-  (`spec-driven-development` comes next) or intent itself is still unknown
-  (`interview-me` comes first). Its sharpening questions expect a live
-  user; in autonomous stages unanswered questions become recorded
-  assumptions.
+- Do not attach it when requirements are already spec-ready
+  (`spec-driven-development` comes next) or intent is still unknown
+  (`interview-me` comes first); its sharpening questions expect a live
+  user, so autonomous stages record unanswered ones as assumptions.
 
 **Default attachments:** suggested by `stages/research` and `stages/options`
 `skill_refs`; attached to the `research` stage of the `tech-decision`,
@@ -63,26 +62,23 @@ standalone mode does not guarantee.
 
 ## What to expect
 
-- The producer restates the idea as a "How Might We" problem, asks 3–5
-  sharpening questions, generates 5–8 variations, then converges on 2–3
-  stress-tested directions (SKILL.md → Process).
-- Supporting files in the skill folder are consulted along the way:
-  `frameworks.md` (extra ideation lenses for Phase 1),
-  `refinement-criteria.md` (the Phase 2 evaluation rubric), `examples.md`
-  (model sessions for tone and depth), plus the optional
+- Per SKILL.md → Process: restate as a "How Might We" problem, ask 3–5
+  sharpening questions, generate 5–8 variations, converge on 2–3
+  stress-tested directions.
+- Supporting files are consulted along the way: `frameworks.md` (Phase 1
+  ideation lenses), `refinement-criteria.md` (Phase 2 rubric),
+  `examples.md` (model sessions), plus the optional
   `scripts/idea-refine.sh` helper that initializes an ideas directory.
 - Done means SKILL.md → Verification passes: a one-pager with assumptions,
   validation strategies, and a "Not Doing" list — written to
   `runs/<run-id>/` in a harness run, not `docs/ideas/`.
 - Misapplication signs (SKILL.md → Red Flags): 20+ shallow variations, no
-  assumptions surfaced, or jumping straight to the one-pager without the
-  divergent phases.
+  assumptions surfaced, or jumping straight to the one-pager.
 
 ## Worked example
 
-Request: "Should we build a plugin system for our CLI, or is that
-overkill?" The router starts a `tech-decision` run, whose shipped manifest
-already attaches `idea-refine` to the `research` stage:
+Request: "Should we build a plugin system for our CLI?" The router starts
+a `tech-decision` run, whose manifest already attaches it at `research`:
 
 ```yaml
   - id: research
@@ -93,6 +89,5 @@ already attaches `idea-refine` to the `research` stage:
 
 The research producer explores variations (full plugin API, config-driven
 hooks, "do nothing"), stress-tests them against `refinement-criteria.md`,
-and writes a one-pager into the run directory naming a recommended
-direction, assumptions to validate, and a "Not Doing" list — input the
-`options` stage then compares.
+and writes a one-pager into the run directory — recommended direction,
+assumptions to validate, "Not Doing" list — for the `options` stage to compare.

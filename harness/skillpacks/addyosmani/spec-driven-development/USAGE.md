@@ -17,17 +17,15 @@ success criteria.
 See SKILL.md → When to Use / When NOT to use for the full criteria. Harness
 routing cues:
 
-- Any sdlc run — it is a default at both intake (capturing requirements as
-  a spec skeleton) and design (producing the full validated spec), so the
-  router rarely needs to add it.
-- Requests starting a new project, feature, or multi-file change where no
-  written spec exists, or where requirements are ambiguous ("make it
-  faster", "modernize this").
+- Any sdlc run — it is a default at both intake (spec skeleton) and design
+  (full validated spec), so the router rarely needs to add it.
+- Requests starting a new project, feature, or multi-file change with no
+  written spec, or with ambiguous requirements ("make it faster").
 - Runs about to make an architectural decision that should be pinned down
   in writing before implementation.
-- Skip single-line fixes and typo-level changes (per SKILL.md). Its Plan
-  and Tasks phases defer to `planning-and-task-breakdown` as canonical — in
-  the sdlc workflow those phases belong to the separate plan stage.
+- Skip single-line fixes and typos (per SKILL.md). Its Plan and Tasks
+  phases defer to `planning-and-task-breakdown` as canonical — in the sdlc
+  workflow those phases belong to the separate plan stage.
 
 **Default attachments:** suggested by `stages/intake` and `stages/design`
 `skill_refs`; attached to the `intake` stage (alongside `interview-me`) and
@@ -69,11 +67,9 @@ standalone mode does not guarantee.
 - The producer opens with an "ASSUMPTIONS I'M MAKING" block and asks
   clarifying questions before writing spec content; vague requirements come
   back reframed as measurable success criteria.
-- The spec covers the six core areas — Objective, Commands, Project
-  Structure, Code Style, Testing Strategy, and the three-tier Boundaries
-  (Always / Ask first / Never) — using SKILL.md's template.
-- Phases are gated on human review: in a harness run, the workflow's
-  approval gates enforce the sign-off SKILL.md requires between phases.
+- The spec covers the six core areas of SKILL.md's template — Objective,
+  Commands, Project Structure, Code Style, Testing Strategy, Boundaries —
+  and its phase gates map to the workflow's approval gates in a harness run.
 - The spec is a living artifact: scope or decision changes update it first;
   in a harness run it lives under `runs/<run-id>/` as the stage artifact
   the plan and implement stages consume.
@@ -96,7 +92,6 @@ sdlc run; the shipped manifest attaches this skill at intake and design:
 ```
 
 The design producer lists its assumptions (threaded vs. flat, notification
-behavior, permissions model), gets them corrected, then writes the spec:
-objective with acceptance criteria, commands, structure, a code-style
-snippet, testing strategy, and boundaries ("Ask first: schema changes").
-The approved spec becomes the input the plan stage decomposes.
+behavior, permissions), gets them corrected, then writes the six-area spec
+with boundaries like "Ask first: schema changes". The approved spec becomes
+the input the plan stage decomposes.

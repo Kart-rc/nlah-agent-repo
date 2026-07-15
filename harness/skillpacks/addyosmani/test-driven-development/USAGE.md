@@ -20,8 +20,7 @@ routing cues:
 - Any sdlc run implementing logic or changing behavior — it is a default on
   the implement stage, so the router rarely needs to add it.
 - Bug-fix runs especially: the Prove-It Pattern makes the reproduction test
-  the first deliverable, which gives validators a concrete regression guard
-  to check.
+  the first deliverable, giving validators a concrete regression guard.
 - Requests phrased as "prove it works", "add tests for", or any change to
   existing functionality that could silently break behavior.
 - Skip pure configuration, documentation, or static-content changes with no
@@ -66,25 +65,21 @@ standalone mode does not guarantee.
 - The producer writes each test first and shows it failing before writing
   the minimal code to pass it; bug fixes always begin with a reproduction
   test that fails against current code.
-- Test distribution follows the pyramid (~80% small unit tests), tests
-  assert state/outcomes rather than internal call sequences, and real
-  implementations are preferred over mocks (SKILL.md → Writing Good Tests).
-- Tests read as a specification: DAMP naming, arrange-act-assert, one
-  assertion per concept.
-- Browser-facing changes additionally get runtime verification via the
-  DevTools workflow in SKILL.md → Browser Testing, when tooling allows.
+- Test distribution follows the pyramid (~80% small unit tests); tests
+  assert outcomes rather than internal call sequences, prefer real
+  implementations over mocks, and read as a specification (DAMP naming,
+  arrange-act-assert, one assertion per concept).
 - Done means SKILL.md → Verification passes: every new behavior has a test,
   the suite is green, bug fixes carry their reproduction test, nothing
   skipped or disabled.
-- Misapplication signs (from SKILL.md → Red Flags): tests that pass on
-  first run, "all tests pass" with no tests actually run, or the same test
-  command re-run with no intervening code change.
+- Misapplication signs (SKILL.md → Red Flags): tests that pass on first
+  run, "all tests pass" with no tests actually run, or re-running the same
+  test command with no intervening code change.
 
 ## Worked example
 
-Bug report: "Completing a task doesn't set its completedAt timestamp." The
-router classifies this as an sdlc bug fix; the shipped manifest already
-attaches this skill to implement:
+Bug report: "Completing a task doesn't set its completedAt timestamp." An
+sdlc bug fix; the shipped manifest already attaches this skill:
 
 ```yaml
   - id: implement

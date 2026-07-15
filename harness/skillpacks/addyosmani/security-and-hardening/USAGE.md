@@ -69,9 +69,8 @@ standalone mode does not guarantee.
   changes, file uploads — surface as explicit approval requests; in a
   harness run these route through the workflow's approval gates.
 - Input validation lands at system boundaries, queries are parameterized,
-  secrets stay in the environment, and `npm audit` findings get triaged via
-  the skill's decision tree rather than ignored; for AI features, model
-  output is validated and encoded before use.
+  secrets stay in the environment, `npm audit` findings get triaged via the
+  skill's decision tree, and LLM output is validated before use.
 - Done means SKILL.md → Verification passes (no critical/high audit
   findings, authz on every protected endpoint, no SSRF-able fetches); the
   pack's `references/security-checklist.md` holds the detailed list.

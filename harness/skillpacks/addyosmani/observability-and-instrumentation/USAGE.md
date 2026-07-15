@@ -16,9 +16,8 @@ written alongside the feature, not after it.
 
 See SKILL.md → When to Use / NOT for the full criteria. Harness routing cues:
 
-- Feature runs whose implement stage adds a service, endpoint, background
-  job, queue, retry logic, or external integration — anything that will run
-  in production and need evidence it works.
+- Runs adding a service, endpoint, background job, queue, retries, or
+  external integration — production code that needs evidence it works.
 - Requests explicitly about telemetry: "add logging/metrics/tracing",
   "set up alerting", "we couldn't tell what happened in production".
 - Post-incident hardening work where diagnosis was too slow.
@@ -63,14 +62,12 @@ standalone mode does not guarantee.
 
 ## What to expect
 
-- Before touching code, the producer writes down 2–4 questions an on-call
-  engineer will ask; every signal added must map to one (SKILL.md →
-  Process step 1).
-- Logs become structured JSON events with stable names and a correlation ID
-  on every line; secrets and PII are excluded by allowlisting fields.
-- New endpoints and external dependencies get RED metrics with bounded
-  label sets and latency histograms (percentiles, not averages); new alerts
-  are symptom-based, runbook-linked, and test-fired once.
+- Before touching code, the producer writes down 2–4 on-call questions;
+  every signal added must map to one (SKILL.md → Process step 1).
+- Logs become structured JSON events with stable names and a correlation
+  ID; new endpoints and dependencies get RED metrics with bounded label
+  sets and latency histograms; new alerts are symptom-based,
+  runbook-linked, and test-fired once.
 - Done means SKILL.md → Verification passes, including locating an induced
   staging failure via telemetry alone; the at-a-glance list is the pack's
   `references/observability-checklist.md`.
@@ -92,8 +89,7 @@ the sdlc `implement` stage for the run:
       - uses: skillpacks/addyosmani/observability-and-instrumentation
 ```
 
-The builder first records the on-call questions ("what fraction succeed
-after retry?", "why do permanent failures happen?"), then ships the retry
-logic with `payment_failed` structured events, RED metrics on the provider
-call, and one symptom-based alert — verifying the telemetry by forcing a
-staging failure and finding it by `requestId`.
+The builder records the on-call questions first ("what fraction succeed
+after retry?"), then ships the retry logic with `payment_failed` structured
+events, RED metrics on the provider call, and one symptom-based alert —
+verified by forcing a staging failure and finding it by `requestId`.

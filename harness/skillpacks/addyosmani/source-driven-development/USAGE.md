@@ -20,8 +20,7 @@ routing cues:
 - Implement stages building framework-heavy code where the recommended
   approach matters: forms, routing, data fetching, state management, auth.
 - Requests asking for "current best practices", "documented", "verified",
-  or "correct" implementations — or boilerplate that will be copied across
-  the project.
+  or "correct" implementations — or boilerplate that will be copied.
 - Runs against fast-moving frameworks (React, Next.js, Django) where
   training-data patterns are likely stale or deprecated.
 - Skip for version-independent work (renames, typo fixes, pure logic) or
@@ -65,26 +64,22 @@ standalone mode does not guarantee.
 ## What to expect
 
 - The producer opens with a "STACK DETECTED" statement naming exact
-  versions from the dependency file, asking rather than guessing when
-  versions are ambiguous. It needs fetch access to documentation sites;
-  without network access it degrades to flagging patterns as unverified.
+  versions from the dependency file (asking when ambiguous); without
+  doc-site fetch access it degrades to flagging patterns as unverified.
 - It fetches the specific docs page per feature (never the homepage),
   citing only official docs, official blogs/changelogs, web standards
   references, or compatibility tables — never Stack Overflow or tutorials.
 - Delivered code carries full-URL citations for framework-specific
-  decisions; anything uncheckable is marked "UNVERIFIED", not hedged.
-- Conflicts — docs vs. existing code, or docs vs. docs — are surfaced as
-  explicit options for a human to pick, not silently resolved.
-- Done means SKILL.md → Verification passes: versions identified, sources
-  official, no deprecated APIs, conflicts surfaced. Misapplication signs
-  (SKILL.md → Red Flags): "I believe this API..." instead of a citation, or
-  code shipped without reading `package.json`.
+  decisions; anything uncheckable is marked "UNVERIFIED", and conflicts
+  (docs vs. existing code, docs vs. docs) are surfaced as explicit options.
+- Done means SKILL.md → Verification passes; misapplication signs (Red
+  Flags): "I believe this API..." with no citation, or code shipped without
+  reading `package.json`.
 
 ## Worked example
 
-Request: "Add a signup form to our React app using whatever the current
-recommended pattern is." Use `workflow-composer` to add this skill to the
-run's implement stage:
+Request: "Add a signup form using the current recommended React pattern."
+Use `workflow-composer` to add this skill to the run's implement stage:
 
 ```yaml
   - id: implement

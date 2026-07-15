@@ -69,19 +69,16 @@ standalone mode does not guarantee.
 - Fixes target a named bottleneck (N+1 query, unbounded fetch, oversized
   bundle, unnecessary re-renders) rather than shotgun micro-optimization.
 - The stage output includes specific before/after numbers and, where
-  configured, a CI guard (bundle-size check, Lighthouse CI) so the win
-  doesn't silently regress.
+  configured, a CI guard (bundle-size check, Lighthouse CI).
 - Done means SKILL.md → Verification passes: bottleneck identified and
   addressed, Web Vitals in "Good" thresholds, existing tests still green.
 - Misapplication signs (SKILL.md → Red Flags): optimization with no
-  profiling data to justify it, or `React.memo`/`useMemo` sprinkled
-  everywhere as reassurance.
+  profiling data, or `React.memo`/`useMemo` everywhere as reassurance.
 
 ## Worked example
 
-Request: "Our dashboard takes 6 seconds to load; get LCP under 2.5s." The
-router classifies this as sdlc work; use `workflow-composer` to add this
-skill to the implement stage for the run:
+Request: "Our dashboard takes 6 seconds to load; get LCP under 2.5s." An
+sdlc run; use `workflow-composer` to add this skill to implement:
 
 ```yaml
   - id: implement

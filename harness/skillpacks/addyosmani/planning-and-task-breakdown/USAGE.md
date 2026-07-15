@@ -65,15 +65,14 @@ standalone mode does not guarantee.
   each task delivers working end-to-end functionality.
 - Every task follows SKILL.md's structure — description, acceptance
   criteria, verification commands, dependencies, files likely touched, size
-  estimate — with anything L-or-larger broken down further.
-- Checkpoints appear after every 2–3 tasks, high-risk tasks come early, and
-  parallelization opportunities are called out explicitly.
+  estimate — with anything L-or-larger broken down further; checkpoints
+  appear every 2–3 tasks and high-risk tasks come early.
 - SKILL.md names `tasks/plan.md` and `tasks/todo.md` as its output
   convention; in a harness run the planner writes these documents into the
   stage's artifact directory under `runs/<run-id>/` instead.
 - Done means SKILL.md → Verification passes: every task has acceptance
-  criteria and a verification step, dependencies are ordered, no task
-  touches more than ~5 files, and a human has approved the plan.
+  criteria and a verification step, dependencies ordered, no task touching
+  more than ~5 files, plan approved by a human.
 - Misapplication signs (SKILL.md → Red Flags): tasks that just say
   "implement the feature", all tasks XL-sized, or no checkpoints.
 
@@ -93,5 +92,5 @@ skill:
 The planner maps schema → models → endpoints → UI dependencies, then emits
 a phased plan: Task 1 "workspace table + migration" (S), Task 2 "user can
 create a workspace end-to-end" (M), a checkpoint, and so on — each with
-test commands as verification — ready for the implement stage to consume
-one slice at a time.
+test commands as verification — for the implement stage to consume one
+slice at a time.

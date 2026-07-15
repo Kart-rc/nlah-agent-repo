@@ -21,7 +21,7 @@ See SKILL.md → When to Use for the full criteria. Harness routing cues:
 - Requests phrased as "deploy this", "prepare the release", "plan the
   rollout", "we need a rollback plan", or "open the beta".
 - Runs the router tags as high delivery risk (data migrations,
-  infrastructure changes): the staged-rollout and rollback sections are the
+  infrastructure changes): staged rollout and rollback are the
   risk-reduction mechanics.
 - For the underlying telemetry work attach
   `observability-and-instrumentation` at implement instead; this skill
@@ -76,8 +76,7 @@ standalone mode does not guarantee.
 - Done means SKILL.md → Verification passes, both before and after deploy;
   the deliver artifacts land in `runs/<run-id>/`.
 - Misapplication signs (SKILL.md → Red Flags): deploying without a rollback
-  plan, big-bang releases skipping staging, or nobody watching the first
-  hour.
+  plan, big-bang releases skipping staging, or nobody watching the first hour.
 
 ## Worked example
 

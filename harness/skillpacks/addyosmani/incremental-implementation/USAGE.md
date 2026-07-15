@@ -16,8 +16,8 @@ with simplicity and scope discipline as standing rules.
 See SKILL.md → When to Use / When NOT to use for the full criteria. Harness
 routing cues:
 
-- Any feature or bug-fix run whose implement stage will touch more than one
-  file — for the sdlc workflow this is the default, so it is already there.
+- Any run whose implement stage will touch more than one file (the sdlc
+  default, so it is usually already attached).
 - Requests phrased as "build", "implement", "add feature", or "refactor"
   where the producer would otherwise land everything in one large diff.
 - Runs with a task breakdown from `planning-and-task-breakdown`: this skill
@@ -62,24 +62,22 @@ standalone mode does not guarantee.
 ## What to expect
 
 - The producer (a `builder` persona modifying the target repo per its stage
-  contract) works the increment cycle — implement → test → verify → commit —
-  one slice at a time, choosing a slicing strategy (vertical, contract-first,
-  or risk-first) per SKILL.md.
+  contract) works the cycle implement → test → verify → commit, one slice
+  at a time, picking a slicing strategy per SKILL.md (vertical,
+  contract-first, or risk-first).
 - Commit history becomes a sequence of small, individually revertable
   commits, each leaving build and tests green — not one large drop.
 - Out-of-scope issues get recorded as "noticed but not touching" notes
   instead of being fixed opportunistically.
 - Done means SKILL.md → Verification passes: every increment tested and
   committed, full suite green, clean build, no uncommitted changes.
-- Misapplication signs (SKILL.md → Red Flags): 100+ lines written without
-  running tests, unrelated changes mixed into one increment, or a broken
-  build between slices.
+- Misapplication signs (SKILL.md → Red Flags): 100+ untested lines, mixed
+  unrelated changes in one increment, or a broken build between slices.
 
 ## Worked example
 
-Request: "Add CSV export to the reports page (API endpoint + download
-button + tests)." The router classifies this as an sdlc feature; the
-shipped manifest already attaches this skill to `implement`:
+Request: "Add CSV export to the reports page (endpoint + button + tests)."
+An sdlc feature; the shipped manifest already attaches this skill:
 
 ```yaml
   - id: implement
@@ -89,7 +87,6 @@ shipped manifest already attaches this skill to `implement`:
       - uses: skillpacks/addyosmani/test-driven-development
 ```
 
-The builder lands slice 1 (serializer + unit tests), slice 2 (endpoint +
-API test), slice 3 (UI button wired end-to-end), committing after each with
-tests green, and reports the slice-by-slice trail in its stage output under
-`runs/<run-id>/`.
+The builder lands slice 1 (serializer + tests), slice 2 (endpoint + API
+test), slice 3 (UI wired end-to-end), committing after each with tests
+green, and reports the slice trail in its stage output under `runs/<run-id>/`.
