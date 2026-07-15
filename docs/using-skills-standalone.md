@@ -5,12 +5,18 @@ Code without starting a harness workflow. Standalone use is useful when you
 want one discipline or a lightweight sequence and are prepared to manage the
 handoffs and review points yourself.
 
-This guide covers both packs:
+This guide covers all three packs:
 
 - `harness/skillpacks/addyosmani/`: 24 engineering lifecycle skills, including
   the `using-agent-skills` meta-skill.
 - `harness/skillpacks/tech-director/`: 7 skills for technical judgment,
   organizational influence, risk, communication, and people leadership.
+- `harness/skillpacks/geoffreylitt/`: 3 skills for understanding AI-written
+  code — literate code explainers, comprehension quizzes, and ephemeral
+  interactive micro-worlds. Ad hoc by design: apply them after (or alongside)
+  any implementation work whose output a human must genuinely understand,
+  e.g. `code-explainers` + `understanding-quizzes` once a change is built,
+  and `micro-worlds` when reading alone gives no feel for runtime behavior.
 
 ## What standalone mode does not provide
 
@@ -82,7 +88,7 @@ direct `/skill-name` invocation. From the root of this repository, run:
 repo_root="$(git rev-parse --show-toplevel)"
 mkdir -p "$HOME/.claude/skills"
 
-for pack in addyosmani tech-director; do
+for pack in addyosmani tech-director geoffreylitt; do
   for source in "$repo_root/harness/skillpacks/$pack"/*; do
     [ -f "$source/SKILL.md" ] || continue
     name="$(basename "$source")"
