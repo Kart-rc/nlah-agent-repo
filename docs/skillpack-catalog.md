@@ -19,7 +19,7 @@ frontmatter (materialized into new manifests by workflow-composer) and/or
 attached in a shipped workflow manifest. "ad hoc" = no default; attach it
 explicitly where its USAGE.md suggests.
 
-## `.claude/skills` — Claude Code runtime skills (4 skills)
+## `.claude/skills` — Claude Code runtime skills (5 skills)
 
 These are a different category from the practice skills below: Claude Code
 discovers them automatically and triggers them from their frontmatter
@@ -33,6 +33,7 @@ operating controls (see `CLAUDE.md`).
 | [workflow-composer](../.claude/skills/workflow-composer/USAGE.md) | Creates/modifies workflow manifests from existing stages, validators, adapters, skill packs; lints and dry-runs | Invoked when you ask for a new/changed workflow |
 | [architecture-decision-records](../.claude/skills/architecture-decision-records/USAGE.md) | Drives and records architectural decisions as ADRs calibrated to enterprise context | Triggered when a significant technical choice is made or questioned |
 | [bootstrap-claude-context](../.claude/skills/bootstrap-claude-context/USAGE.md) | Installs a layered, self-improving Claude Code context scaffold into a repository | Invoked when onboarding a repo to Claude Code |
+| [okf-second-brain](../.claude/skills/okf-second-brain/USAGE.md) | Creates and incrementally grows a personal second brain as an OKF v0.1 knowledge bundle (typed markdown concepts, indexes, change log, conformance validator) | Triggered when starting a second brain or saving/ingesting a document, URL, or insight into it |
 
 ## `addyosmani` — engineering lifecycle (24 skills, vendored)
 
