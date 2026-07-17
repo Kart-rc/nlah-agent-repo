@@ -18,9 +18,12 @@ listing) and `log.md` (chronological change history). No database, no
 registry; everything is greppable text. The full grammar is condensed in
 "OKF quick reference" below — never fetch the spec at runtime.
 
-This skill has two operations:
+This skill has three operations:
 
 - **Init** — scaffold a new, empty, conformant bundle.
+- **Baseline** — seed a fresh bundle from an existing corpus (a folder of
+  notes, exports, or documents) by running every file through the ingest
+  pipeline.
 - **Ingest** — incrementally add knowledge: distill a document, URL, or
   pasted text into concept documents, deduplicate against what already
   exists, cross-link, and update the indexes and log.
@@ -81,6 +84,34 @@ And `log.md`:
 Create no other files or directories — type directories appear lazily on
 first ingest, so every index entry always points at a real file. Finish
 with the conformance check.
+
+## Baseline: seeding from an existing corpus
+
+When the user points at existing material (a notes folder, doc exports, a
+list of files or URLs) to establish the initial baseline:
+
+1. **Init first** if no bundle exists at the target path (bundle root and
+   source corpus must be different directories — never init inside the
+   corpus).
+2. **Enumerate the corpus**: Glob for readable text formats (`.md`,
+   `.txt`, and similar); list anything skipped (binaries, unreadable
+   formats) so the user knows the baseline's coverage. Show the user the
+   file count and ask before proceeding if it is large (>25 files).
+3. **Ingest each file through the normal pipeline below** — distill,
+   dedup, place, cross-link, index, log. The dedup gate matters even
+   here: corpora often contain near-duplicates, and the `resource:` URI
+   (the source file's path) makes each baseline doc re-ingestable later.
+4. **Work in batches** of roughly 10 files: after each batch, run the
+   conformance check, then continue. Cross-linking improves as the bundle
+   grows, so revisit obvious missed links in a final pass.
+5. **Log** one bullet per document under today's date heading, then close
+   the baseline with a summary bullet, e.g.
+   `* **Update**: Baseline complete — seeded 34 concepts from ~/notes (3 files skipped: binary).`
+6. Finish with the conformance check and report: concepts created by
+   type, files skipped, and any dedup merges.
+
+The source corpus is read-only throughout — the skill never modifies or
+moves the user's original files.
 
 ## Ingest: adding knowledge
 

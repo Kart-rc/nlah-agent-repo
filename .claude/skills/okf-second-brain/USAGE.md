@@ -37,27 +37,66 @@ save/ingest-this phrasing.
 
 ## How to invoke
 
-### In conversation
+### Step 1 — Initial baseline (one-time setup)
 
-Explicit invocation:
+Create the bundle, optionally seeded from material you already have:
 
-```text
-/okf-second-brain create my second brain at ~/knowledge/second-brain
-```
+1. **Create the bundle.** Name a path, or accept the `./second-brain/`
+   default:
 
-```text
-/okf-second-brain ingest https://simonwillison.net/2026/some-article/
-```
+   ```text
+   /okf-second-brain create my second brain at ~/knowledge/second-brain
+   ```
 
-Natural-language requests that trigger it via the frontmatter description:
+   Answer the one batched question round (bundle title, path
+   confirmation, optional focus domains). You get a root `index.md` and a
+   `log.md` — a valid, empty bundle.
 
-```text
-Save the key takeaways from meeting-notes/2026-07-17.md to my second brain.
-```
+2. **Seed it from an existing corpus** (optional but recommended). Point
+   the skill at a folder of notes, exports, or documents — it enumerates
+   readable files, tells you the count, and runs each through the full
+   ingest pipeline (distill → dedup → file by type → cross-link → index →
+   log), validating after every batch of ~10:
 
-```text
-Remember this: we're standardizing on uv for Python tooling because ...
-```
+   ```text
+   /okf-second-brain seed the baseline from ~/notes and ~/Downloads/exports
+   ```
+
+   Your source files are read-only — nothing is moved or modified. The
+   run ends with a report: concepts created by type, files skipped, dedup
+   merges, and a `Baseline complete` log entry.
+
+3. **Check the result.** Skim the root `index.md` for the sections that
+   appeared and `log.md` for what was created. The conformance validator
+   has already passed (exit 0) or the skill isn't done.
+
+### Step 2 — Continuous updates (ongoing routine)
+
+Invoke the skill whenever new knowledge shows up; it finds the existing
+bundle automatically (via the `okf_version` marker) so you don't repeat
+the path:
+
+- **A document or file**:
+  `Save the key takeaways from meeting-notes/2026-07-17.md to my second brain.`
+- **A URL**:
+  `/okf-second-brain ingest https://simonwillison.net/2026/some-article/`
+- **A conversational insight or decision**:
+  `Remember this: we're standardizing on uv for Python tooling because ...`
+- **A changed source you saved before**: just ingest it again — the
+  `resource:` URI matches the existing concept, which is merged and
+  refreshed with an **Update** log entry, never duplicated. This makes
+  "re-run over everything new" safe.
+- **Batch catch-up**: point it at a drop folder periodically
+  (`ingest everything new in ~/inbox into my second brain`) — the dedup
+  gate skips what's already captured, so only genuinely new material
+  lands.
+- **Health check**: `validate my second brain` runs the conformance
+  validator and reports findings without changing anything.
+
+Habits that keep the bundle current: ingest meeting notes the day they're
+written, ingest articles as you finish reading them, and do a weekly
+batch catch-up on your inbox/downloads folder. `log.md` shows exactly
+what changed and when, so gaps are easy to spot.
 
 ### Requirements
 
@@ -76,6 +115,11 @@ Remember this: we're standardizing on uv for Python tooling because ...
   `okf_version: "0.1"` and a `log.md` opened with a **Creation** entry.
   Type directories (`notes/`, `references/`, `decisions/`, ...) appear
   lazily on first use.
+- **Baseline seeding**: an existing corpus is enumerated (with a count
+  shown before large runs), each readable file is ingested through the
+  normal pipeline in validated batches of ~10, sources stay untouched,
+  and the run ends with a by-type summary plus a `Baseline complete` log
+  entry.
 - **Ingest**: one concept document per source by default (split only when
   a source holds several independently linkable concepts), filed by its
   frontmatter `type`, cross-linked under `## Related` with
