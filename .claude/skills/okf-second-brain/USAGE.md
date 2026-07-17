@@ -24,6 +24,9 @@ the whole bundle for OKF conformance with a bundled script.
 - Adding to it: "save this to my second brain", "ingest this article/URL/
   file", "remember this decision", "add my notes from today's meeting".
 - Health-checking an existing bundle: "validate my second brain".
+- Consolidating: "port my old second brain into this one", "merge the
+  OKF bundle at ~/old-brain", or "link the team's knowledge bundle so I
+  can refer to it".
 - **Not** for architectural decisions that belong beside code — those go
   through the `architecture-decision-records` skill into the project's ADR
   log. A `Decision` concept in the second brain records the *user's*
@@ -69,6 +72,38 @@ Create the bundle, optionally seeded from material you already have:
 3. **Check the result.** Skim the root `index.md` for the sections that
    appeared and `log.md` for what was created. The conformance validator
    has already passed (exit 0) or the skill isn't done.
+
+### Porting other second brains (any time)
+
+If you already have one or more second brains as OKF bundles elsewhere,
+you don't rebuild them — point the skill at them:
+
+- **Port (copy and merge)** — consolidate an old bundle into this one:
+
+  ```text
+  /okf-second-brain port my old second brain at ~/old-brain into this one
+  ```
+
+  Because the source is already OKF, concepts are copied with their
+  frontmatter intact (type, tags, timestamps, resource) rather than
+  re-distilled; each gets a `ported_from:` provenance key. The dedup gate
+  runs per document, so concepts you already have are merged, not
+  duplicated. Cross-links between ported documents are rewritten to
+  their new locations, and the run ends with a report (ported / merged /
+  unresolved links). The source bundle is never modified — retire it
+  yourself once you're satisfied.
+
+- **Link (refer without copying)** — keep a bundle where it is (e.g. a
+  shared team brain) and register it for reference:
+
+  ```text
+  /okf-second-brain link the team knowledge bundle at ../team-brain
+  ```
+
+  It's listed under `# Linked Bundles` in your root index, and future
+  ingests consult it: if a concept already exists there, the skill links
+  to it from `## Related` instead of duplicating it locally. Linked
+  bundles are read-only to this skill.
 
 ### Step 2 — Continuous updates (ongoing routine)
 
@@ -124,6 +159,11 @@ what changed and when, so gaps are easy to spot.
   a source holds several independently linkable concepts), filed by its
   frontmatter `type`, cross-linked under `## Related` with
   bundle-absolute paths, cited under `## Citations`, indexed, and logged.
+- **Porting**: source concepts arrive with frontmatter preserved plus a
+  `ported_from:` provenance key; already-known concepts merge instead of
+  duplicating; internal links are rewritten to their new locations; the
+  source bundle stays untouched. Linked (not ported) bundles are
+  consulted during dedup and cross-linking but never written to.
 - **Idempotency**: re-ingesting the same document (matched by `resource:`
   URI first) updates the existing concept and logs an **Update** — it
   never creates a duplicate.

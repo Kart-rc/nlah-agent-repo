@@ -1,6 +1,6 @@
 ---
 name: okf-second-brain
-description: Create and incrementally grow a personal "second brain" knowledge base as an Open Knowledge Format (OKF) v0.1 bundle. Use when the user wants to start a second brain or knowledge base, save or ingest a document, note, URL, or insight into their notes, or maintain an OKF knowledge bundle.
+description: Create and incrementally grow a personal "second brain" knowledge base as an Open Knowledge Format (OKF) v0.1 bundle. Use when the user wants to start a second brain or knowledge base, save or ingest a document, note, URL, or insight into their notes, port or link another existing OKF bundle, or maintain an OKF knowledge bundle.
 metadata:
   spec: https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md (OKF v0.1)
 ---
@@ -18,7 +18,7 @@ listing) and `log.md` (chronological change history). No database, no
 registry; everything is greppable text. The full grammar is condensed in
 "OKF quick reference" below — never fetch the spec at runtime.
 
-This skill has three operations:
+This skill has four operations:
 
 - **Init** — scaffold a new, empty, conformant bundle.
 - **Baseline** — seed a fresh bundle from an existing corpus (a folder of
@@ -27,6 +27,9 @@ This skill has three operations:
 - **Ingest** — incrementally add knowledge: distill a document, URL, or
   pasted text into concept documents, deduplicate against what already
   exists, cross-link, and update the indexes and log.
+- **Port** — merge another already-existing OKF second brain (at any
+  other location) into this bundle, preserving its typed concepts; or
+  merely *link* it as an external bundle to consult without copying.
 
 ## Mode detection and target path
 
@@ -112,6 +115,68 @@ list of files or URLs) to establish the initial baseline:
 
 The source corpus is read-only throughout — the skill never modifies or
 moves the user's original files.
+
+## Port: merging or linking other second brains
+
+When the user points at another OKF bundle — a second brain already
+created elsewhere — first verify it *is* one: its root `index.md` must
+carry the `okf_version` frontmatter marker. If the marker is absent, the
+directory is not an OKF bundle; offer to treat it as a **Baseline** corpus
+instead (which re-distills) rather than porting blindly.
+
+Then ask which of the two modes the user wants:
+
+### Port (copy and merge)
+
+Source concepts are already distilled and typed, so porting preserves
+them instead of re-distilling:
+
+1. **Enumerate** the source's non-reserved `.md` files. Its `index.md`
+   and `log.md` files are *not* copied — indexes are rebuilt here
+   surgically, and the source's history stays with the source.
+2. **Per document, run the dedup gate** against this bundle (resource
+   URI → slug → semantic). A genuine match merges into the existing
+   concept (logged as **Update**); otherwise the document is copied
+   verbatim — frontmatter (`type`, `title`, `tags`, `timestamp`,
+   `resource`) intact — with one addition: a custom
+   `ported_from: <source-bundle-root>/<relative-path>` key recording
+   provenance. Keep the original `timestamp`; porting is relocation, not
+   modification.
+3. **Place by type**: file each document into this bundle's type
+   directory for its `type`. Source types not yet used here are new
+   producer-defined types — confirm them with the user once, then apply
+   consistently. On slug collision with a *different* concept, qualify
+   the incoming slug (e.g. `-ported`), never overwrite.
+4. **Rewrite cross-links after all documents are placed**: source
+   bundle-absolute links (`/foo/bar.md`) point into the *source* root.
+   Build an old-path → new-path map from step 3 and rewrite each ported
+   document's links to the targets' new locations. Links to source
+   documents that were *merged* during dedup point at the merge target.
+   Unresolvable links may remain (the spec tolerates broken links) —
+   list them in the port report.
+5. **Index and log**: one surgical index bullet per ported document; one
+   log bullet per document under today's date, closed by a summary, e.g.
+   `* **Update**: Ported 28 concepts from ~/old-brain (4 merged into existing concepts, 2 unresolved links).`
+6. Work in validated batches of ~10 (as for Baseline). The source bundle
+   is read-only throughout — porting never mutates or deletes it; the
+   user decides separately whether to retire it.
+
+### Link (refer without copying)
+
+When the user wants to *refer* to another bundle but keep it where it is
+(e.g. a shared team brain), register it instead of copying:
+
+- Add a bullet under a `# Linked Bundles` section in this bundle's root
+  `index.md`:
+  `* [Team Platform Brain](../team-brain/) - shared platform knowledge; consult before creating platform concepts`
+  (a path outside the bundle is acceptable — consumers tolerate links
+  they cannot resolve).
+- From then on, during ingest, extend the **semantic dedup check and
+  cross-link grep** across linked bundle roots too: if a concept already
+  lives in a linked bundle, prefer linking to it from the new document's
+  `## Related` section over duplicating it locally.
+- Linked bundles are never written to — they have their own owners,
+  indexes, and logs.
 
 ## Ingest: adding knowledge
 
