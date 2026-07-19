@@ -94,6 +94,7 @@ stages:
     skills:
       - uses: skillpacks/tech-director/options-and-tradeoffs
       - uses: skillpacks/addyosmani/idea-refine
+      - uses: skillpacks/distinguished-engineer/back-of-envelope-estimation
 
   - id: decide
     uses: stages/decide

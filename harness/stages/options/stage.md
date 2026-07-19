@@ -32,6 +32,7 @@ knowledge_slots: [org-context, prior-art]
 skill_refs:
   - skillpacks/tech-director/options-and-tradeoffs
   - skillpacks/addyosmani/idea-refine
+  - skillpacks/distinguished-engineer/back-of-envelope-estimation
 permissions:
   writes: [own_artifact_dir]
 ---

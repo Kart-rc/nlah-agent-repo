@@ -80,6 +80,7 @@ stages:
     skills:
       - uses: skillpacks/addyosmani/spec-driven-development
       - uses: skillpacks/addyosmani/api-and-interface-design
+      - uses: skillpacks/distinguished-engineer/failure-domain-thinking
 
   - id: plan
     uses: stages/plan

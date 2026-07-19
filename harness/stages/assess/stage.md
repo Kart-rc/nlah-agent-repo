@@ -41,6 +41,7 @@ knowledge_slots: [org-context, prior-art]
 skill_refs:
   - skillpacks/tech-director/architectural-judgement
   - skillpacks/addyosmani/documentation-and-adrs
+  - skillpacks/distinguished-engineer/failure-domain-thinking
 permissions:
   writes: [own_artifact_dir]
 ---

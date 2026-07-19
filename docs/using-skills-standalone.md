@@ -5,18 +5,26 @@ Code without starting a harness workflow. Standalone use is useful when you
 want one discipline or a lightweight sequence and are prepared to manage the
 handoffs and review points yourself.
 
-This guide covers all three packs:
+This guide covers all five packs:
 
 - `harness/skillpacks/addyosmani/`: 24 engineering lifecycle skills, including
   the `using-agent-skills` meta-skill.
 - `harness/skillpacks/tech-director/`: 7 skills for technical judgment,
   organizational influence, risk, communication, and people leadership.
+- `harness/skillpacks/distinguished-engineer/`: 8 skills for deep-IC technical
+  mastery — technical strategy, problem framing, back-of-envelope estimation,
+  failure-domain thinking, deep system debugging, large-scale migration
+  design, complexity budgeting, and force multiplication. Mostly ad hoc by
+  design: attach them where the work type (a migration, a hard bug, a
+  strategy) calls for them.
 - `harness/skillpacks/geoffreylitt/`: 3 skills for understanding AI-written
   code — literate code explainers, comprehension quizzes, and ephemeral
   interactive micro-worlds. Ad hoc by design: apply them after (or alongside)
   any implementation work whose output a human must genuinely understand,
   e.g. `code-explainers` + `understanding-quizzes` once a change is built,
   and `micro-worlds` when reading alone gives no feel for runtime behavior.
+- `harness/skillpacks/review-debt/`: 1 skill for evidence-backed review of
+  reviewability and hidden review debt.
 
 ## What standalone mode does not provide
 
@@ -88,7 +96,7 @@ direct `/skill-name` invocation. From the root of this repository, run:
 repo_root="$(git rev-parse --show-toplevel)"
 mkdir -p "$HOME/.claude/skills"
 
-for pack in addyosmani tech-director geoffreylitt; do
+for pack in addyosmani tech-director distinguished-engineer geoffreylitt review-debt; do
   for source in "$repo_root/harness/skillpacks/$pack"/*; do
     [ -f "$source/SKILL.md" ] || continue
     name="$(basename "$source")"
@@ -230,6 +238,22 @@ skills marked **∥** constrain the slices while they are being built.
 | 8 | `code-simplification` | **C** | Simplify only after the regression test protects behavior. |
 | 9 | `git-workflow-and-versioning` | **R** | Commit the test and fix together with a focused history. |
 | 10 | `ci-cd-and-automation` + `shipping-and-launch` | **C** | Use when the fix changes automated gates or must be released. |
+
+### Escalation-tier bug (cross-system, intermittent, or previously stalled)
+
+Use instead of the routine bug-fix sequence when the failure spans systems
+nobody fully owns, is intermittent or environment-dependent, or has already
+resisted a routine debugging attempt.
+
+| Order | Skill | Marker | Use and handoff |
+|---:|---|:---:|---|
+| 1 | `using-agent-skills` | **R** | Confirm the escalation tier: routine debugging stalled, or the failure crosses ownership boundaries. |
+| 2 | `problem-framing` | **C** | Use when the failure itself is unowned or its scope is contested. Produce the problem statement before diagnosis. |
+| 3 | `deep-system-debugging` | **R** | Invariants, hypothesis tree with recorded kills, bisection, minimal repro. Produce the evidenced mechanism. |
+| 4 | `test-driven-development` | **R** | Encode the repro as a failing regression test; prove the fix by the mechanism, not by disappearance. |
+| 5 | `failure-domain-thinking` | **C** | Extract the class-level lesson: containment, budgets, and ladder changes, not just the patched instance. |
+| 6 | `code-review-and-quality` | **R** | Review fix, regression test, and mechanism story together. |
+| 7 | `git-workflow-and-versioning` | **R** | Commit test, fix, and investigation notes as a coherent unit. |
 
 ### Technical decision
 
