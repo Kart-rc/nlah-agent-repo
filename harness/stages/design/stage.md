@@ -33,6 +33,7 @@ knowledge_slots: [org-context, prior-art]
 skill_refs:
   - skillpacks/addyosmani/spec-driven-development
   - skillpacks/addyosmani/api-and-interface-design
+  - skillpacks/distinguished-engineer/failure-domain-thinking
 permissions:
   writes: [own_artifact_dir]
 ---

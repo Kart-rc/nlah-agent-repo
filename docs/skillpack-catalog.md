@@ -76,6 +76,19 @@ operating controls (see `CLAUDE.md`).
 | [risk-mitigation](../harness/skillpacks/tech-director/risk-mitigation/USAGE.md) | Actionable risk registers and pre-mortems | ad hoc |
 | [timeboxed-decision-making](../harness/skillpacks/tech-director/timeboxed-decision-making/USAGE.md) | Calls at stated confidence within a deadline | `decide` (tech-decision) |
 
+## `distinguished-engineer` — deep-IC technical mastery (8 skills)
+
+| Skill | What it does | Default attachment |
+|---|---|---|
+| [back-of-envelope-estimation](../harness/skillpacks/distinguished-engineer/back-of-envelope-estimation/USAGE.md) | Order-of-magnitude arithmetic before anything is built | `options` (tech-decision) |
+| [complexity-budgeting](../harness/skillpacks/distinguished-engineer/complexity-budgeting/USAGE.md) | Complexity as audited spend; deletion as roadmap work | ad hoc |
+| [deep-system-debugging](../harness/skillpacks/distinguished-engineer/deep-system-debugging/USAGE.md) | Escalation-tier diagnosis: invariants, hypothesis trees, bisection, minimal repros | ad hoc |
+| [failure-domain-thinking](../harness/skillpacks/distinguished-engineer/failure-domain-thinking/USAGE.md) | Blast radius, degradation ladders, backpressure, recovery | `design` (sdlc); `assess` stage |
+| [force-multiplication](../harness/skillpacks/distinguished-engineer/force-multiplication/USAGE.md) | Paved paths, exemplar artifacts, teaching reviews, delegated problems | ad hoc |
+| [large-scale-migration-design](../harness/skillpacks/distinguished-engineer/large-scale-migration-design/USAGE.md) | Reversible migration slices, parallel-run verification, explicit end state | ad hoc |
+| [problem-framing](../harness/skillpacks/distinguished-engineer/problem-framing/USAGE.md) | Unowned ambiguity into falsifiable problem statements | ad hoc |
+| [technical-strategy](../harness/skillpacks/distinguished-engineer/technical-strategy/USAGE.md) | Diagnosis-first direction: sized bets, kill criteria, adoption rings | ad hoc |
+
 ## `geoffreylitt` — understanding AI-written code (3 skills)
 
 | Skill | What it does | Default attachment |

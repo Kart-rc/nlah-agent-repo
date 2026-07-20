@@ -83,8 +83,9 @@ is needed.
 
 ### 3. Use practice skills standalone (no harness)
 
-The 35 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
-geoffreylitt, and review-debt packs) work directly in Claude Code — either
+The 43 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
+distinguished-engineer, geoffreylitt, and review-debt packs) work directly in
+Claude Code — either
 loaded by path from this repo or installed once into `~/.claude/skills/` for
 `/skill-name` invocation across projects.
 [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) provides
@@ -125,7 +126,7 @@ Critical work cannot start without explicit human approval.
 | `harness/validators/` | Validator library (4 types, parameterizable) |
 | `harness/knowledge/` | Knowledge adapters: `enterprise-mcp`, `second-brain` |
 | `harness/policies/` | Risk policy (risk → validators + approvals) and gate checklists |
-| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), `geoffreylitt` (understanding AI-written code), and `review-debt` (evidence-backed code-review burden) |
+| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), original `distinguished-engineer` (deep-IC technical mastery), `geoffreylitt` (understanding AI-written code), and `review-debt` (evidence-backed code-review burden) |
 | [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) | Claude Code setup, handoff contract, and sequences for using practice skills without the harness |
 | `harness/schema/` | JSON Schemas — the SDK-ready contracts for every document type |
 | `scripts/harness_lint.py` | Validates schemas, cross-refs, validator coverage, topology |
