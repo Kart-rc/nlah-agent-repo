@@ -13,6 +13,13 @@ the risk overlay (extra validators and approval checkpoints) from
 `harness/policies/risk-policy.yaml`, then orchestrates the run per
 `HARNESS.md` §3 and reports with verification evidence.
 
+For software changes it also selects an **execution mode** (SKILL.md →
+Step 3b): `standard` (`sdlc`), `autonomous` (`sdlc-autonomous` — only when a
+strong verifier exists, actions are reversible, and blast radius is
+contained; never at High/Critical risk), or `interactive`
+(`sdlc-interactive` — stage-by-stage teaching and approval checkpoints).
+User phrasing overrides the rubric in the safe direction only.
+
 ## When to invoke
 
 - Per `CLAUDE.md`, **any** delivery request — feature, bug fix, proposal,

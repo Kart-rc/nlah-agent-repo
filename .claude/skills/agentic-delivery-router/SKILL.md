@@ -14,6 +14,7 @@ a raw requirement into a safe, validated delivery path:
 1. Understand the request
 2. Classify the work type
 3. Classify the risk level
+3b. Select the execution mode (standard / autonomous / interactive)
 4. Select the workflow manifest
 5. Apply the risk overlay (extra validators + approval checkpoints)
 6. Surface assumptions; decide whether approval is needed
@@ -40,6 +41,7 @@ approved:
 REQUEST CLASSIFICATION
 - Work type:
 - Risk level:
+- Execution mode:
 - Selected workflow:
 - Mandatory gates (from risk policy):
 - Assumptions:
@@ -112,6 +114,39 @@ stage; provide step-by-step execution and rollback plans; attach
 The risk → validators/checkpoints mapping is data, not prose:
 `harness/policies/risk-policy.yaml`.
 
+## Step 3b: Select the execution mode
+
+Software-change work types are served by a workflow family (`sdlc`,
+`sdlc-autonomous`, `sdlc-interactive`); this step chooses among them. For
+work types served by a single workflow, the mode is **standard** — skip
+ahead.
+
+- **standard** (default): the `sdlc` composition — validated stages, human
+  contact at escalations and risk-overlay checkpoints only.
+- **autonomous** (`sdlc-autonomous`): choose ONLY when the user asked for
+  hands-off delivery AND ALL three hold:
+  (a) a strong, spec-aligned deterministic verifier exists — the target repo
+  has a runnable test suite and the request has testable acceptance
+  criteria; (b) every planned action is reversible — git-revertible, no
+  data migration, production deploy, or external side effects; (c) blast
+  radius is contained — one repo/service, no public contract. High or
+  Critical risk is never autonomous.
+- **interactive** (`sdlc-interactive`): choose when the user wants to
+  understand, approve, or learn from each stage ("walk me through",
+  "teach me", "I approve each step") — or when the user asked for autonomy
+  but a rubric condition fails and they still want stage-level involvement
+  rather than standard mode.
+
+User phrasing overrides the rubric **in the safe direction only**: a user
+may always demand interactive; autonomous is granted only when the rubric
+agrees. When a rubric condition fails an autonomy request, say which one and
+offer interactive or standard.
+
+Record the mode (and the rubric outcome that justified it) in the REQUEST
+CLASSIFICATION block; in `task_state.json` it is carried as a
+`classification.assumptions` entry — e.g. `"execution mode: autonomous
+(verifier strong, actions reversible, blast radius contained)"`.
+
 ## Step 4: Select the workflow
 
 1. Glob `harness/workflows/*/workflow.yaml`; read ONLY each manifest's
@@ -129,11 +164,16 @@ The risk → validators/checkpoints mapping is data, not prose:
    (v1: `proposal` for persuasion-shaped asks, `tech-decision` for
    decision-shaped asks with a nameable option set; otherwise clarify first —
    intake exists to convert vagueness into requirements).
+5. `sdlc`, `sdlc-autonomous`, and `sdlc-interactive` share their work types
+   deliberately: they are one family disambiguated by Step 3b's execution
+   mode, never treated as a multiple-match ambiguity.
 
 ## Step 5: Collect inputs and initialize the run
 
 1. Read the selected manifest's `inputs`; collect any missing required input
-   from the user before starting.
+   from the user before starting. Inputs whose description marks them as
+   orchestrator-resolved (e.g. `run_dir`) are filled at initialization and
+   never requested from the user.
 2. Initialize the run per `HARNESS.md` §3.0: create `runs/<run-id>/`, write
    `request.md` + `inputs.json`, apply the risk overlay from
    `harness/policies/risk-policy.yaml` while writing `workflow.lock.yaml`
@@ -183,6 +223,22 @@ the risk overlay.
 **Resume:** on "resume run <run-id>", follow `HARNESS.md` §3.2 — trust
 `task_state.json`, never conversation memory; never re-execute passed stages.
 
+**Mid-run mode flip (autonomous → human-in-the-loop):** on any of these
+triggers, stop treating the run as autonomous —
+- the verifier cannot discriminate (the test-of-tests or verify gate shows
+  the suite passes over broken code);
+- an action outside the declared reversible set is reached (data migration,
+  deploy, external side effect);
+- a repair budget exhausts (failure class F5);
+- the work drifts outside its classified type (novelty the classification
+  did not anticipate).
+
+Do not continue autonomously past the trigger: stop through the existing
+§3.1 escalation/approval mechanics, append a `mode_flipped` event to
+`events.jsonl`, and — with the user's consent — tighten the lock per
+`HARNESS.md` §5 (add `mode: block` checkpoints before all remaining stages).
+Never loosen the lock mid-run; the flip has one direction.
+
 ## Step 8: Report
 
 On completion, deliver the SUMMARY block (HARNESS.md §7.5) filled from real
@@ -226,7 +282,7 @@ without verification evidence; treating subagent output as inherently correct
 
 ## Final checklist
 
-- [ ] Work type and risk classified; classification recorded in run state
+- [ ] Work type, risk, and execution mode classified; classification recorded in run state
 - [ ] Workflow selected by intent match (or composer offered on F7)
 - [ ] Risk overlay applied at lock time; approval obtained if required
 - [ ] All stages passed their gates (or escalation surfaced honestly)
