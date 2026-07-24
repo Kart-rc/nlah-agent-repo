@@ -49,14 +49,22 @@ in its own subagent context, each blocked by an independent validation gate.
 High-risk work automatically gains extra validators and human-approval
 checkpoints via `harness/policies/risk-policy.yaml`.
 
-Four workflows ship in v1:
+Six workflows ship in v1:
 
 | Workflow | Deliverable | Key input |
 |---|---|---|
 | `sdlc` | Verified, delivered code change | `target_repo` — path to the codebase to change |
+| `sdlc-autonomous` | End-to-end autonomous change: verified, documented, release-ready, plus a self-retrospective with ratifiable harness proposals | `target_repo` (`run_dir` is orchestrator-resolved) |
+| `sdlc-interactive` | The same chain stage by stage with a human in the loop: EXPLAIN.md teaching artifacts, notify/block approval checkpoints | `target_repo` (`run_dir` is orchestrator-resolved) |
 | `proposal` | Audience-ready business/technical case | `audience` |
 | `tech-decision` | Time-bound decision record with rationale, dissent, revisit triggers | `audience`, optional `decision_deadline` |
 | `architecture-review` | Evidence-cited verdict: approve / approve-with-conditions / reject | `subject` — path to the design doc, RFC, or codebase |
+
+The three sdlc-family workflows share their work types deliberately: the
+router's execution-mode rubric (autonomous only with a strong verifier,
+reversible actions, and contained blast radius — never at High/Critical
+risk) selects among them, and an autonomous run that trips a threshold
+mid-run flips one-way to human-in-the-loop.
 
 Run state externalizes to `runs/<run-id>/`; after any interruption or context
 reset, say **"resume run \<run-id\>"** and the run continues losslessly from
@@ -83,8 +91,9 @@ is needed.
 
 ### 3. Use practice skills standalone (no harness)
 
-The 43 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
-distinguished-engineer, geoffreylitt, and review-debt packs) work directly in
+The 45 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
+distinguished-engineer, geoffreylitt, review-debt, teaching, and provenance
+packs) work directly in
 Claude Code — either
 loaded by path from this repo or installed once into `~/.claude/skills/` for
 `/skill-name` invocation across projects.
@@ -120,13 +129,13 @@ Critical work cannot start without explicit human approval.
 | `HARNESS.md` | **The constitution**: runtime charter, orchestration protocol, state semantics, prompt templates |
 | `.claude/skills/agentic-delivery-router/` | Entry point: classify → select workflow → orchestrate |
 | `.claude/skills/workflow-composer/` | Create/modify workflow manifests (scaffold, lint, dry-run) |
-| `.claude/agents/` | Subagent personas: 3 producers, 4 validators (tool permissions = boundaries) |
-| `harness/workflows/` | Composed workflows: `sdlc`, `proposal`, `tech-decision`, `architecture-review` |
-| `harness/stages/` | Stage library (12 stages; `intake` is shared across workflows) |
-| `harness/validators/` | Validator library (4 types, parameterizable) |
+| `.claude/agents/` | Subagent personas: 3 producers, 5 validators (tool permissions = boundaries) |
+| `harness/workflows/` | Composed workflows: `sdlc`, `sdlc-autonomous`, `sdlc-interactive`, `proposal`, `tech-decision`, `architecture-review` |
+| `harness/stages/` | Stage library (15 stages; `intake` is shared across workflows) |
+| `harness/validators/` | Validator library (5 types, parameterizable) |
 | `harness/knowledge/` | Knowledge adapters: `enterprise-mcp`, `second-brain` |
 | `harness/policies/` | Risk policy (risk → validators + approvals) and gate checklists |
-| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), original `distinguished-engineer` (deep-IC technical mastery), `geoffreylitt` (understanding AI-written code), and `review-debt` (evidence-backed code-review burden) |
+| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), original `distinguished-engineer` (deep-IC technical mastery), `geoffreylitt` (understanding AI-written code), `review-debt` (evidence-backed code-review burden), `teaching` (EXPLAIN.md at human checkpoints), and `provenance` (context registers and citations) |
 | [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) | Claude Code setup, handoff contract, and sequences for using practice skills without the harness |
 | `harness/schema/` | JSON Schemas — the SDK-ready contracts for every document type |
 | `scripts/harness_lint.py` | Validates schemas, cross-refs, validator coverage, topology |
@@ -145,3 +154,9 @@ Critical work cannot start without explicit human approval.
 - **review-debt**: first-party code-review guidance adapted from Sachin Gupta's
   “Your Coding Agent Is Creating Review Debt” talk, focused on reviewability
   and human understanding without penalizing AI assistance.
+- **Executable-agent-skills proposal**
+  ([`docs/proposals/2026-07-23-executable-agent-skills-sdlc.md`](docs/proposals/2026-07-23-executable-agent-skills-sdlc.md)):
+  autonomous/interactive execution modes, the test-of-tests gate, teaching and
+  provenance layers, and the document/readiness/retrospect stages — translated
+  into harness components per the
+  [mapping doc](docs/proposals/2026-07-23-executable-agent-skills-sdlc-mapping.md).
