@@ -75,8 +75,11 @@ protocol is defined.
    (resolved workflow-level inputs, collected from the user if missing).
 3. Resolve the manifest: copy `harness/workflows/<id>/workflow.yaml`, apply the
    risk overlay from `harness/policies/risk-policy.yaml` for the classified
-   risk level (append `additional_validators` to the named stages; insert
-   `approval_checkpoints`), and write the result to `workflow.lock.yaml`.
+   risk level (append `additional_validators` to the named stages; merge the
+   overlay's `approval_checkpoints` with any the manifest itself declares —
+   union by `before`; overlay checkpoints carry no `mode` and are always
+   block-tier, and `block` wins over `notify` for the same stage), and write
+   the result to `workflow.lock.yaml`.
    **The lock file is the only manifest read for the rest of the run.**
 4. Initialize `task_state.json` (all stages `pending`; `classification` block
    recorded from the router's REQUEST CLASSIFICATION).
@@ -88,10 +91,14 @@ Execute stages in `needs` order (v1: sequentially; a stage runs only after all
 stages in its `needs` are `passed`). For each stage:
 
 1. **Approval checkpoint.** If the lock file declares an approval checkpoint
-   `before` this stage and `classification.approval.granted_at` is null for it:
+   `before` this stage (default tier `block`) and no grant is recorded for it:
    set run status `awaiting_approval`, present the plan, rollback strategy, and
    verification approach to the user (see §7 templates), and STOP. Resume only
-   on explicit user approval (record `granted_at`).
+   on explicit user approval; record the grant in
+   `classification.approvals.<stage>` (`classification.approval` remains the
+   run-level pre-start approval). A checkpoint with `mode: notify` does not
+   stop the run: present the same evidence, append a `checkpoint_notified`
+   event to `events.jsonl`, and continue.
 2. **Resolve.** Look up each input binding (`workflow:<input>` in `inputs.json`;
    `<stage>:<output>` in `task_state.json → stages.<stage>.artifacts`). Write
    `stages/<id>/inputs.json` mapping input names to file paths. An unresolvable
@@ -205,8 +212,13 @@ Run statuses: `running | awaiting_approval | escalated | complete | aborted`.
   `docs/failure-taxonomy.md` (F1–F7). Notably: tool/environment failures (F3)
   are retried once and do NOT consume the repair budget — they are not the
   producer's fault.
-- Approval checkpoints (from the risk policy) are gates owned by the human:
-  the run cannot pass them without explicit user approval.
+- Approval checkpoints (from the risk policy or the manifest) are gates owned
+  by the human: the run cannot pass block-tier ones without explicit user
+  approval.
+- At any stop (an escalation or an approval checkpoint), a human may
+  **tighten** the remainder of the run — adding approval checkpoints or
+  validators to the lock file, recorded as a `lock_tightened` event in
+  `events.jsonl`. Loosening the lock mid-run is never allowed.
 
 ## 6. Permission boundaries
 
@@ -214,10 +226,14 @@ Enforced by persona tool restrictions (mechanism) and document rules (policy):
 
 - **Producers** write only inside `runs/<run-id>/stages/<their-stage>/`.
   Exception: the `builder` persona additionally modifies the target repo as
-  directed by the implement/verify stage contracts.
+  directed by stage contracts that declare `target_repo` in
+  `permissions.writes` (implement, verify, document).
 - **Validators** are mechanically read-only: their personas carry no Write
-  tool, so they cannot alter anything (the `red-team` persona may execute
-  commands to probe, but must never persist changes). They return their
+  tool, so they cannot alter anything (the `red-team` and `test-auditor`
+  personas may execute commands to probe; `test-auditor` may additionally
+  apply temporary mutations — in throwaway copies of the target repo, or as
+  git-revertible edits it MUST fully restore before returning; neither may
+  leave any persisted change). They return their
   verdict JSON as their final message; the orchestrator persists it.
   Validators read the stage's `artifacts/` directory and any paths the
   artifacts reference — never `summary.md`, never other stages' summaries,

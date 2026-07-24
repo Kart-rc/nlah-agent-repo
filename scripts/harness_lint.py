@@ -298,6 +298,11 @@ def lint_manifest(path: Path, stages: dict[str, dict], validators: dict[str, dic
             if src_contract and name not in {o["name"] for o in src_contract["outputs"]}:
                 err(path, f"output '{out['name']}' binds '{src}:{name}' but '{src}' declares no output '{name}'")
 
+    for cp in manifest.get("approval_checkpoints", []) or []:
+        before = cp.get("before")
+        if before and before != "*" and before not in by_id:
+            err(path, f"approval checkpoint before '{before}' matches no stage id in this manifest")
+
 
 # ---------------------------------------------------------------- policies
 

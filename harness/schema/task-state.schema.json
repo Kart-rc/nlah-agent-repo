@@ -38,6 +38,11 @@
             "required": { "type": "boolean" },
             "granted_at": { "type": ["string", "null"], "format": "date-time" }
           }
+        },
+        "approvals": {
+          "type": "object",
+          "additionalProperties": { "type": ["string", "null"], "format": "date-time" },
+          "description": "Per-checkpoint grants keyed by the checkpoint's `before` stage id. `classification.approval` remains the run-level pre-start approval."
         }
       }
     },
