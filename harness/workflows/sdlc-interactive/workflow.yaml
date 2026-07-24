@@ -1,6 +1,7 @@
 # SDLC Change Delivery — interactive mode (proposal Scenario B).
 # Same nine-stage chain as sdlc-autonomous, decomposed around the human:
-# every stage teaches (explain-your-work + EXPLAIN.md gate), ambiguity
+# every stage teaches (explain-your-work + EXPLAIN.md gate; document and
+# deliver also close with a comprehension quiz), ambiguity
 # surfaces as questions at checkpoints instead of silent assumptions, and
 # three-tier gating pauses the run where it matters — no checkpoint entry =
 # auto tier (intake), `notify` = present evidence and continue, `block` =
@@ -183,7 +184,7 @@ stages:
       - uses: validators/completeness-check
         with:
           target_repo: "workflow:target_repo"
-          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you; artifacts/quiz.md exists with five questions targeting the change's decisions and behavior (at least one prediction, one rationale, one boundary), an answer key separated from the question view, and the speed-regulator rule stated. Both are allowed, expected artifacts for this stage."
       - uses: validators/persona-reviewer
         with:
           persona: "New team member using only the updated docs to understand, run, and roll back the change"
@@ -191,6 +192,7 @@ stages:
     skills:
       - uses: skillpacks/addyosmani/documentation-and-adrs
       - uses: skillpacks/geoffreylitt/code-explainers
+      - uses: skillpacks/geoffreylitt/understanding-quizzes
       - uses: skillpacks/teaching/explain-your-work
 
   - id: readiness
@@ -226,12 +228,13 @@ stages:
       - uses: validators/completeness-check
         with:
           checklist: policies/gates/release.md
-          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you; artifacts/quiz.md exists with five questions targeting the change's decisions and behavior (at least one prediction, one rationale, one boundary), an answer key separated from the question view, and the speed-regulator rule stated. Both are allowed, expected artifacts for this stage."
       - uses: validators/persona-reviewer
         with:
           persona: "Non-technical stakeholder who must understand what changed, why, and what risk remains"
     skills:
       - uses: skillpacks/addyosmani/shipping-and-launch
+      - uses: skillpacks/geoffreylitt/understanding-quizzes
       - uses: skillpacks/teaching/explain-your-work
 
   - id: retrospect

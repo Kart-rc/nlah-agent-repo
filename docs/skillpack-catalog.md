@@ -93,8 +93,8 @@ operating controls (see `CLAUDE.md`).
 
 | Skill | What it does | Default attachment |
 |---|---|---|
-| [code-explainers](../harness/skillpacks/geoffreylitt/code-explainers/USAGE.md) | Literate explainer documents instead of raw diffs | ad hoc (natural home: `implement`/`verify`) |
-| [understanding-quizzes](../harness/skillpacks/geoffreylitt/understanding-quizzes/USAGE.md) | Comprehension quiz gating human review | ad hoc (natural home: `implement`/`verify`) |
+| [code-explainers](../harness/skillpacks/geoffreylitt/code-explainers/USAGE.md) | Literate explainer documents instead of raw diffs | `document` (sdlc-autonomous, sdlc-interactive) |
+| [understanding-quizzes](../harness/skillpacks/geoffreylitt/understanding-quizzes/USAGE.md) | Comprehension quiz gating human review | `sdlc-interactive`: `document`, `deliver` |
 | [micro-worlds](../harness/skillpacks/geoffreylitt/micro-worlds/USAGE.md) | Ephemeral interactive artifacts for runtime intuition | ad hoc (natural home: `implement`/`verify`) |
 
 ## `review-debt` — hidden review burden (1 skill)
