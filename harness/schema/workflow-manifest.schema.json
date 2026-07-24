@@ -100,6 +100,25 @@
             "items": { "$ref": "#/$defs/knowledgeAttachment" },
             "description": "Stage-level knowledge adapters, additive to workflow-level ones."
           },
+          "loopback": {
+            "type": "object",
+            "required": ["to"],
+            "additionalProperties": false,
+            "properties": {
+              "to": {
+                "$ref": "#/$defs/slug",
+                "description": "Passed upstream stage to re-open. Must be in this stage's transitive needs (linted)."
+              },
+              "max_rounds": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 3,
+                "default": 1,
+                "description": "Loopback rounds before the declaring stage escalates instead."
+              }
+            },
+            "description": "Cross-stage repair feature flag (\"hard verify\"): when this stage's gate fails with a finding carrying defect_stage equal to `to`, the orchestrator re-opens `to` instead of repairing this stage (HARNESS.md §3.1.6). Absent = off."
+          },
           "skills": {
             "type": "array",
             "items": { "$ref": "#/$defs/skillAttachment" },

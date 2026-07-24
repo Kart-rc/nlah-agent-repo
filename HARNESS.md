@@ -128,6 +128,19 @@ stages in its `needs` are `passed`). For each stage:
    **Fail fast:** the first `fail` verdict ends the gate. Write `gate.json`.
 6. **Decide.**
    - All verdicts `pass` → stage `passed`; continue to the next stage.
+   - A verdict is `fail`, the stage declares `loopback: {to, max_rounds}` in
+     the lock file, and any finding in the failing verdicts carries
+     `defect_stage: <to>` → this is not a repair case for this stage: the
+     artifact is honest, the defect lives upstream. Increment this stage's
+     `loopback_rounds` and record the gate attempt with outcome `loopback`.
+     If rounds ≤ `max_rounds`: set stage `<to>` to `repairing` with its
+     attempts reset to 0 (a loopback round grants a fresh repair budget) —
+     its next producer runs with the Repair Prompt (§7.3) whose FAILURE
+     REPORTS are this gate's failing verdicts; set this stage and every
+     other later stage that had passed back to `pending`; append a
+     `loopback_triggered` event; continue the per-stage loop from `<to>`.
+     If rounds exceed `max_rounds`: escalate this stage (§7.4; the
+     escalation includes the loopback history).
    - A verdict is `fail` and attempts ≤ `max_repair_attempts` → stage
      `repairing`; go to step 3 with the Repair Prompt (§7.3). Repair attempts
      use a **fresh producer context**: the failure verdicts and the prior
@@ -153,7 +166,9 @@ On any restart, context reset, or the instruction "resume run <id>":
    `validating` → re-run from step 5 (gate); `repairing` → step 3 with repair
    prompt; `escalated`/`awaiting_approval` → present the pending report or
    approval request to the user.
-3. Never re-execute a `passed` stage.
+3. Never re-execute a `passed` stage. (A loopback (§3.1.6) is the one
+   mechanism that reverts a passed stage's status — after which the stage is
+   no longer `passed` on disk, so this rule holds unchanged on resume.)
 
 The orchestrator may treat itself as freshly resumed at any time (after an
 escalation, or every few stages on long workflows): re-read state, drop
@@ -215,6 +230,15 @@ Run statuses: `running | awaiting_approval | escalated | complete | aborted`.
   conformance before expensive judgment). First failure short-circuits.
 - A repair attempt = fresh producer subagent + failed verdicts + prior
   artifacts. Producer context never accumulates across attempts.
+- **Loopback ("hard verify") is a feature flag, off by default.** A stage may
+  declare `loopback: {to, max_rounds}` in the manifest; combined with a gate
+  check that attributes findings upstream via `defect_stage` (e.g. a verify
+  extra_check failing any not-met criterion with `defect_stage: implement`),
+  a gate failure re-opens the upstream stage instead of repairing the honest
+  report (§3.1.6). Each round grants the target a fresh repair budget;
+  rounds are bounded by `max_rounds`; exhaustion escalates the declaring
+  stage. Without the flag, a not-met verification finding flows forward into
+  readiness/deliver evidence and surfaces to the human instead.
 - Failure classes and their recovery policies are defined in
   `docs/failure-taxonomy.md` (F1–F7). Notably: tool/environment failures (F3)
   are retried once and do NOT consume the repair budget — they are not the

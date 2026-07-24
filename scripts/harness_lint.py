@@ -15,6 +15,7 @@ Checks (cross-reference layer, what JSON Schema can't express):
     where <stage> is in the transitive needs and <output> is declared by it
   - validator `with` blocks supply every required parameter, pass no
     undeclared ones, and binding-shaped values (HARNESS.md §3.1.5) resolve
+  - a stage's `loopback.to` names a stage in its transitive needs
   - manifest outputs bind to declared stage outputs
   - stage.md bodies contain all required section headings
   - risk-policy.yaml refs (validators, gate checklists, stage selectors) exist
@@ -284,6 +285,10 @@ def lint_manifest(path: Path, stages: dict[str, dict], validators: dict[str, dic
                         err(path, f"stage '{sid}': validator '{v['uses']}' parameter '{key}' binds '{src}:{out}' but '{src}' declares no output '{out}'")
         if contract and contract["producer"] in vagents:
             err(path, f"stage '{sid}': producer persona '{contract['producer']}' also validates its own output")
+
+        lb = s.get("loopback")
+        if lb and lb["to"] not in allowed_sources:
+            err(path, f"stage '{sid}': loopback.to '{lb['to']}' is not in its transitive needs")
 
         for entry in s.get("knowledge", []):
             check_uses_exists(entry["uses"], path)

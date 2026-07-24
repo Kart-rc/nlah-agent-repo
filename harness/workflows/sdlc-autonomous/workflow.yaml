@@ -2,7 +2,9 @@
 # Selected by the router's execution-mode rubric (router Step 3b), NOT by
 # intent ambiguity: it shares its work types with `sdlc` and
 # `sdlc-interactive` deliberately. Full chain through documentation,
-# release-readiness, and self-retrospective; no manifest-declared human
+# release-readiness, and self-retrospective; hard verify is ON (a not-met
+# verification criterion re-opens implement, bounded — delivery is never
+# one-shot); no manifest-declared human
 # checkpoints — the risk overlay still merges its own in at lock time, so
 # risk trumps mode by construction.
 # Attach/detach/swap = edit a line, then run `python3 scripts/harness_lint.py`.
@@ -129,12 +131,17 @@ stages:
   - id: verify
     uses: stages/verify
     needs: [implement]
+    loopback:        # hard verify: a not-met criterion re-opens implement (HARNESS.md §3.1.6)
+      to: implement
+      max_rounds: 2
     inputs:
       change_summary: "implement:change_summary"
       requirements: "intake:requirements"
       target_repo: "workflow:target_repo"
     validators:
       - uses: validators/completeness-check
+        with:
+          extra_check: "hard verify: every criterion verdict in verification_report.md is 'met', or 'not verifiable' with a stated environment reason; any 'not met' verdict is a fail finding carrying defect_stage: implement - the defect lives in the code, not in this honest report."
       - uses: validators/adversarial-reviewer
         with:
           focus: "test adequacy - what is untested, what evidence is missing, where the report overstates its output"

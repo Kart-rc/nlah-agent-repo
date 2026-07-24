@@ -6,7 +6,9 @@
 # three-tier gating pauses the run where it matters — no checkpoint entry =
 # auto tier (intake), `notify` = present evidence and continue, `block` =
 # stop for sign-off (implement, deliver). Tiers retune as one-line edits.
-# Repair budget is 1 by design: failures reach the human fast.
+# Repair budget is 1 by design: failures reach the human fast. Hard verify
+# is ON (one round): a not-met verification criterion re-opens implement
+# once before escalating to the human.
 # Selected by the router's execution-mode rubric (router Step 3b), NOT by
 # intent ambiguity: it shares its work types with `sdlc` and
 # `sdlc-autonomous` deliberately.
@@ -158,6 +160,9 @@ stages:
   - id: verify
     uses: stages/verify
     needs: [implement]
+    loopback:        # hard verify: a not-met criterion re-opens implement (HARNESS.md §3.1.6)
+      to: implement
+      max_rounds: 1
     inputs:
       change_summary: "implement:change_summary"
       requirements: "intake:requirements"
@@ -165,7 +170,7 @@ stages:
     validators:
       - uses: validators/completeness-check
         with:
-          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you (an allowed, expected artifact for this stage); hard verify: every criterion verdict in verification_report.md is 'met', or 'not verifiable' with a stated environment reason - any 'not met' verdict is a fail finding carrying defect_stage: implement (the defect lives in the code, not in this honest report)."
       - uses: validators/adversarial-reviewer
         with:
           focus: "test adequacy - what is untested, what evidence is missing, where the report overstates its output"

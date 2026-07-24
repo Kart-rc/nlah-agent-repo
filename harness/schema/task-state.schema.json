@@ -60,6 +60,11 @@
       "properties": {
         "status": { "enum": ["pending", "in_progress", "validating", "repairing", "passed", "escalated"] },
         "attempts": { "type": "integer", "minimum": 0 },
+        "loopback_rounds": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Rounds of cross-stage loopback this stage has triggered (only on stages declaring `loopback`; HARNESS.md §3.1.6)."
+        },
         "artifacts": {
           "type": "object",
           "additionalProperties": { "type": "string" },
@@ -88,7 +93,7 @@
                 "additionalProperties": { "enum": ["pass", "fail", "error"] },
                 "description": "Validator id → verdict. 'error' = F3 tool/environment failure, does not consume repair budget."
               },
-              "outcome": { "enum": ["passed", "repair", "escalated", "aborted"] }
+              "outcome": { "enum": ["passed", "repair", "loopback", "escalated", "aborted"] }
             }
           }
         }
@@ -111,7 +116,12 @@
               "severity": { "enum": ["blocker", "major", "minor"] },
               "criterion": { "type": "string", "description": "The acceptance criterion or checklist item violated." },
               "evidence": { "type": "string", "description": "Concrete evidence: file path + what is wrong. A finding without a concrete failure scenario is not a finding." },
-              "suggested_fix": { "type": "string" }
+              "suggested_fix": { "type": "string" },
+              "defect_stage": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$",
+                "description": "Optional: the upstream stage whose artifact contains the defect — the validated artifact is honest, the flaw lives earlier. Triggers a loopback when the validated stage declares one targeting this stage (HARNESS.md §3.1.6)."
+              }
             }
           }
         },

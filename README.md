@@ -54,8 +54,8 @@ Six workflows ship in v1:
 | Workflow | Deliverable | Key input |
 |---|---|---|
 | `sdlc` | Verified, delivered code change | `target_repo` — path to the codebase to change |
-| `sdlc-autonomous` | End-to-end autonomous change: verified, documented, release-ready, plus a self-retrospective with ratifiable harness proposals | `target_repo` (`run_dir` is orchestrator-resolved) |
-| `sdlc-interactive` | The same chain stage by stage with a human in the loop: EXPLAIN.md teaching artifacts, notify/block approval checkpoints | `target_repo` (`run_dir` is orchestrator-resolved) |
+| `sdlc-autonomous` | End-to-end autonomous change: verified, documented, release-ready, plus a self-retrospective with ratifiable harness proposals; hard verify re-opens implement when verification fails | `target_repo` (`run_dir` is orchestrator-resolved) |
+| `sdlc-interactive` | The same chain stage by stage with a human in the loop: EXPLAIN.md teaching artifacts, comprehension quizzes at document/deliver, notify/block approval checkpoints, hard verify | `target_repo` (`run_dir` is orchestrator-resolved) |
 | `proposal` | Audience-ready business/technical case | `audience` |
 | `tech-decision` | Time-bound decision record with rationale, dissent, revisit triggers | `audience`, optional `decision_deadline` |
 | `architecture-review` | Evidence-cited verdict: approve / approve-with-conditions / reject | `subject` — path to the design doc, RFC, or codebase |
