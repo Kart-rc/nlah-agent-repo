@@ -26,10 +26,12 @@ review until the responsible human passes the quiz.
   for accumulating cognitive debt, or a human has said "I read it" and the
   stakes make it worth verifying that reading produced understanding.
 
-**Default attachments:** none — ad hoc. No stage `skill_refs` or shipped
-workflow manifest attaches it; the pack README names the `implement` or
-`verify` stage of the `sdlc` workflow as its natural home, so the delivered
-change arrives with its quiz.
+**Default attachments:** `sdlc-interactive` attaches it to the `document`
+and `deliver` stages — each EXPLAIN.md checkpoint closes with a quiz, and
+the completeness gate's `extra_check` requires the quiz artifact. Elsewhere
+ad hoc; the pack README names the `implement` or `verify` stage of the
+`sdlc` workflow as another natural home, so the delivered change arrives
+with its quiz.
 
 ## How to invoke
 

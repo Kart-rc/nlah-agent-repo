@@ -1,6 +1,8 @@
 # Future Workflows
 
-The harness ships with `sdlc`, `proposal`, `tech-decision`, and
+The harness ships with the `sdlc` family (`sdlc`, `sdlc-autonomous`,
+`sdlc-interactive` — one composition at three execution modes, selected by
+the router's Step 3b rubric), `proposal`, `tech-decision`, and
 `architecture-review`. This document maps the router's full work-type
 taxonomy to workflows (existing and future) and walks through composing new
 candidates — **roadmap** and **LOE estimation** in full, plus the shipped
@@ -29,6 +31,13 @@ workflows are compositions, not construction projects.
 
 Until a dedicated workflow exists, the router offers the composer with the
 suggested composition above (failure class F7 — never guess-and-run).
+
+The five software-change rows route to the `sdlc` **family**: `sdlc`,
+`sdlc-autonomous`, or `sdlc-interactive`, chosen by the router's
+execution-mode rubric (SKILL.md → Step 3b), never treated as a
+multiple-match ambiguity. The stages added for that family — `document`,
+`readiness`, `retrospect` — live in the shared stage library and are
+available to every future composition above.
 
 Note: `idea-refinement` stays with `proposal` when the ask is
 persuasion-shaped ("make the case for..."); decision-shaped asks with a

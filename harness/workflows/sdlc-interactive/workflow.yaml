@@ -1,0 +1,265 @@
+# SDLC Change Delivery — interactive mode (proposal Scenario B).
+# Same nine-stage chain as sdlc-autonomous, decomposed around the human:
+# every stage teaches (explain-your-work + EXPLAIN.md gate; document and
+# deliver also close with a comprehension quiz), ambiguity
+# surfaces as questions at checkpoints instead of silent assumptions, and
+# three-tier gating pauses the run where it matters — no checkpoint entry =
+# auto tier (intake), `notify` = present evidence and continue, `block` =
+# stop for sign-off (implement, deliver). Tiers retune as one-line edits.
+# Repair budget is 1 by design: failures reach the human fast.
+# Selected by the router's execution-mode rubric (router Step 3b), NOT by
+# intent ambiguity: it shares its work types with `sdlc` and
+# `sdlc-autonomous` deliberately.
+# Attach/detach/swap = edit a line, then run `python3 scripts/harness_lint.py`.
+
+manifest_version: "1.0"
+
+workflow:
+  id: sdlc-interactive
+  name: "SDLC Change Delivery (Interactive)"
+  description: "Deliver a software change stage by stage with a human in the loop: teaching artifacts at every stage, approval checkpoints at the irreversible ones."
+  intent:
+    summary: "Human-in-the-loop software delivery: the same change types as sdlc, walked stage by stage so the human understands and approves the process and the code. Selected by the router's execution-mode rubric, not by intent matching alone."
+    triggers:
+      - "walk me through building ..."
+      - "explain each step while you ..."
+      - "teach me while you build ..."
+      - "I want to approve each stage of ..."
+    signals: [step-by-step, explain, teach, approve, walkthrough]
+    work_types:
+      - new-feature
+      - bug-fix
+      - api-interface-change
+      - performance-cost-change
+      - refactor-simplification
+
+inputs:
+  - name: request
+    description: "The user's change request, verbatim."
+    format: markdown
+    required: true
+  - name: target_repo
+    description: "Path to the codebase to change."
+    format: path
+    required: true
+  - name: run_dir
+    description: "This run's directory (runs/<run-id>). Resolved by the orchestrator at initialization - never requested from the user."
+    format: path
+    required: true
+
+defaults:
+  gate:
+    max_repair_attempts: 1
+    on_exhaustion: escalate
+  producer_context: fresh
+
+knowledge: []
+
+approval_checkpoints:
+  - before: design
+    mode: notify
+  - before: plan
+    mode: notify
+  - before: implement
+    mode: block
+    note: "First stage that modifies the target repo."
+  - before: verify
+    mode: notify
+  - before: document
+    mode: notify
+  - before: readiness
+    mode: notify
+  - before: deliver
+    mode: block
+    note: "The package is what the human will act on; sign off before it is assembled."
+  - before: retrospect
+    mode: notify
+
+stages:
+  - id: intake
+    uses: stages/intake
+    needs: []
+    inputs:
+      request: "workflow:request"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/requirements.md
+          extra_check: "artifacts/context-register.md exists as a table with columns id, source, provenance, relevance, key claim it supports (ids CR-<n>); artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. Both are allowed, expected artifacts for this stage."
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "ambiguity, missing acceptance criteria, hidden assumptions"
+    skills:
+      - uses: skillpacks/addyosmani/interview-me
+      - uses: skillpacks/addyosmani/spec-driven-development
+      - uses: skillpacks/provenance/context-register
+      - uses: skillpacks/teaching/explain-your-work
+
+  - id: design
+    uses: stages/design
+    needs: [intake]
+    inputs:
+      requirements: "intake:requirements"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/architecture.md
+          extra_check: "load-bearing design decisions cite [context: CR-n] entries from the intake stage's context register, or explicitly state that no external context informed them; artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+      - uses: validators/adversarial-reviewer
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Site Reliability Engineer reviewing for operability, failure modes, and rollback"
+    skills:
+      - uses: skillpacks/addyosmani/spec-driven-development
+      - uses: skillpacks/addyosmani/api-and-interface-design
+      - uses: skillpacks/addyosmani/documentation-and-adrs
+      - uses: skillpacks/distinguished-engineer/failure-domain-thinking
+      - uses: skillpacks/provenance/context-register
+      - uses: skillpacks/teaching/explain-your-work
+
+  - id: plan
+    uses: stages/plan
+    needs: [design]
+    inputs:
+      requirements: "intake:requirements"
+      design: "design:design_doc"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "every requirement id in requirements.md appears in the plan's traceability section; load-bearing planning decisions cite [context: CR-n] entries or explicitly state that no external context informed them; artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+      - uses: validators/adversarial-reviewer
+    skills:
+      - uses: skillpacks/addyosmani/planning-and-task-breakdown
+      - uses: skillpacks/provenance/context-register
+      - uses: skillpacks/teaching/explain-your-work
+
+  - id: implement
+    uses: stages/implement
+    needs: [plan]
+    inputs:
+      plan: "plan:implementation_plan"
+      design: "design:design_doc"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+      - uses: validators/red-team
+      - uses: validators/test-of-tests
+        with:
+          target_repo: "workflow:target_repo"
+          min_mutations: 3
+    skills:
+      - uses: skillpacks/addyosmani/incremental-implementation
+      - uses: skillpacks/addyosmani/test-driven-development
+      - uses: skillpacks/teaching/explain-your-work
+
+  - id: verify
+    uses: stages/verify
+    needs: [implement]
+    inputs:
+      change_summary: "implement:change_summary"
+      requirements: "intake:requirements"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "test adequacy - what is untested, what evidence is missing, where the report overstates its output"
+    skills:
+      - uses: skillpacks/addyosmani/debugging-and-error-recovery
+      - uses: skillpacks/teaching/explain-your-work
+
+  - id: document
+    uses: stages/document
+    needs: [verify]
+    inputs:
+      change_summary: "implement:change_summary"
+      decisions: "design:decisions"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          target_repo: "workflow:target_repo"
+          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you; artifacts/quiz.md exists with five questions targeting the change's decisions and behavior (at least one prediction, one rationale, one boundary), an answer key separated from the question view, and the speed-regulator rule stated. Both are allowed, expected artifacts for this stage."
+      - uses: validators/persona-reviewer
+        with:
+          persona: "New team member using only the updated docs to understand, run, and roll back the change"
+          target_repo: "workflow:target_repo"
+    skills:
+      - uses: skillpacks/addyosmani/documentation-and-adrs
+      - uses: skillpacks/geoffreylitt/code-explainers
+      - uses: skillpacks/geoffreylitt/understanding-quizzes
+      - uses: skillpacks/teaching/explain-your-work
+
+  - id: readiness
+    uses: stages/readiness
+    needs: [document]
+    inputs:
+      change_summary: "implement:change_summary"
+      verification_report: "verify:verification_report"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/release.md
+          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Site Reliability Engineer on call for this service the night it ships"
+    skills:
+      - uses: skillpacks/addyosmani/shipping-and-launch
+      - uses: skillpacks/addyosmani/observability-and-instrumentation
+      - uses: skillpacks/distinguished-engineer/failure-domain-thinking
+      - uses: skillpacks/teaching/explain-your-work
+
+  - id: deliver
+    uses: stages/deliver
+    needs: [readiness]
+    inputs:
+      change_summary: "implement:change_summary"
+      verification_report: "verify:verification_report"
+      requirements: "intake:requirements"
+      readiness_report: "readiness:readiness_report"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/release.md
+          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you; artifacts/quiz.md exists with five questions targeting the change's decisions and behavior (at least one prediction, one rationale, one boundary), an answer key separated from the question view, and the speed-regulator rule stated. Both are allowed, expected artifacts for this stage."
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Non-technical stakeholder who must understand what changed, why, and what risk remains"
+    skills:
+      - uses: skillpacks/addyosmani/shipping-and-launch
+      - uses: skillpacks/geoffreylitt/understanding-quizzes
+      - uses: skillpacks/teaching/explain-your-work
+
+  - id: retrospect
+    uses: stages/retrospect
+    needs: [deliver]
+    inputs:
+      run_dir: "workflow:run_dir"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "failure misclassification, proposals that would weaken gates or permissions, evidence-free claims"
+    skills:
+      - uses: skillpacks/addyosmani/debugging-and-error-recovery
+      - uses: skillpacks/distinguished-engineer/problem-framing
+      - uses: skillpacks/teaching/explain-your-work
+
+outputs:
+  - name: delivered_change
+    from: "deliver:delivery_package"
+  - name: verification_report
+    from: "verify:verification_report"
+  - name: readiness_report
+    from: "readiness:readiness_report"
+  - name: retrospective
+    from: "retrospect:retrospective"

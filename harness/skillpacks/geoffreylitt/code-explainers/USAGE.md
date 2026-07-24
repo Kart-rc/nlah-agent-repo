@@ -26,10 +26,11 @@ is itself a deliverable.
   document the quiz closes out (the pack chains explainer → quiz →
   micro-world).
 
-**Default attachments:** none — ad hoc. No stage `skill_refs` or shipped
-workflow manifest attaches it; the pack README names the `implement` or
-`verify` stage of the `sdlc` workflow as its natural home, so the delivered
-change arrives with its explainer.
+**Default attachments:** the `document` stage — `stages/document` lists it
+in `skill_refs`, and the `sdlc-autonomous` / `sdlc-interactive` manifests
+attach it there. Elsewhere ad hoc; the pack README names the `implement` or
+`verify` stage of the `sdlc` workflow as another natural home, so the
+delivered change arrives with its explainer.
 
 ## How to invoke
 
