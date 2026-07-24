@@ -1,0 +1,218 @@
+# SDLC Change Delivery — autonomous mode (proposal Scenario A).
+# Selected by the router's execution-mode rubric (router Step 3b), NOT by
+# intent ambiguity: it shares its work types with `sdlc` and
+# `sdlc-interactive` deliberately. Full chain through documentation,
+# release-readiness, and self-retrospective; no manifest-declared human
+# checkpoints — the risk overlay still merges its own in at lock time, so
+# risk trumps mode by construction.
+# Attach/detach/swap = edit a line, then run `python3 scripts/harness_lint.py`.
+
+manifest_version: "1.0"
+
+workflow:
+  id: sdlc-autonomous
+  name: "SDLC Change Delivery (Autonomous)"
+  description: "Take a software change request end to end without human touchpoints: verified, documented, release-ready code plus a self-retrospective."
+  intent:
+    summary: "Full-autonomy software delivery: same change types as sdlc, minimal human touchpoints, extended with documentation, readiness, and retrospective stages. Selected by the router's execution-mode rubric, not by intent matching alone."
+    triggers:
+      - "implement ... end to end without checking in"
+      - "run this autonomously and show me the result"
+      - "hands-off delivery of ..."
+      - "ship ... and document it, I'll review at the end"
+    signals: [autonomous, unattended, hands-off, end-to-end]
+    work_types:
+      - new-feature
+      - bug-fix
+      - api-interface-change
+      - performance-cost-change
+      - refactor-simplification
+
+inputs:
+  - name: request
+    description: "The user's change request, verbatim."
+    format: markdown
+    required: true
+  - name: target_repo
+    description: "Path to the codebase to change."
+    format: path
+    required: true
+  - name: run_dir
+    description: "This run's directory (runs/<run-id>). Resolved by the orchestrator at initialization - never requested from the user."
+    format: path
+    required: true
+
+defaults:
+  gate:
+    max_repair_attempts: 2
+    on_exhaustion: escalate
+  producer_context: fresh
+
+knowledge: []
+
+stages:
+  - id: intake
+    uses: stages/intake
+    needs: []
+    inputs:
+      request: "workflow:request"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/requirements.md
+          extra_check: "artifacts/context-register.md exists as a table with columns id, source, provenance, relevance, key claim it supports; ids are CR-<n>. context-register.md is an allowed, expected artifact for this stage."
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "ambiguity, missing acceptance criteria, hidden assumptions"
+    skills:
+      - uses: skillpacks/addyosmani/interview-me
+      - uses: skillpacks/addyosmani/spec-driven-development
+      - uses: skillpacks/provenance/context-register
+
+  - id: design
+    uses: stages/design
+    needs: [intake]
+    inputs:
+      requirements: "intake:requirements"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/architecture.md
+          extra_check: "load-bearing design decisions cite [context: CR-n] entries from the intake stage's context register, or explicitly state that no external context informed them."
+      - uses: validators/adversarial-reviewer
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Site Reliability Engineer reviewing for operability, failure modes, and rollback"
+    skills:
+      - uses: skillpacks/addyosmani/spec-driven-development
+      - uses: skillpacks/addyosmani/api-and-interface-design
+      - uses: skillpacks/addyosmani/documentation-and-adrs
+      - uses: skillpacks/distinguished-engineer/failure-domain-thinking
+      - uses: skillpacks/provenance/context-register
+
+  - id: plan
+    uses: stages/plan
+    needs: [design]
+    inputs:
+      requirements: "intake:requirements"
+      design: "design:design_doc"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "every requirement id in requirements.md appears in the plan's traceability section; load-bearing planning decisions cite [context: CR-n] entries or explicitly state that no external context informed them."
+      - uses: validators/adversarial-reviewer
+    skills:
+      - uses: skillpacks/addyosmani/planning-and-task-breakdown
+      - uses: skillpacks/provenance/context-register
+
+  - id: implement
+    uses: stages/implement
+    needs: [plan]
+    inputs:
+      plan: "plan:implementation_plan"
+      design: "design:design_doc"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/red-team
+      - uses: validators/test-of-tests
+        with:
+          min_mutations: 3
+    gate:
+      max_repair_attempts: 3
+    skills:
+      - uses: skillpacks/addyosmani/incremental-implementation
+      - uses: skillpacks/addyosmani/test-driven-development
+
+  - id: verify
+    uses: stages/verify
+    needs: [implement]
+    inputs:
+      change_summary: "implement:change_summary"
+      requirements: "intake:requirements"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "test adequacy - what is untested, what evidence is missing, where the report overstates its output"
+    skills:
+      - uses: skillpacks/addyosmani/debugging-and-error-recovery
+
+  - id: document
+    uses: stages/document
+    needs: [verify]
+    inputs:
+      change_summary: "implement:change_summary"
+      decisions: "design:decisions"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/persona-reviewer
+        with:
+          persona: "New team member using only the updated docs to understand, run, and roll back the change"
+    skills:
+      - uses: skillpacks/addyosmani/documentation-and-adrs
+      - uses: skillpacks/geoffreylitt/code-explainers
+
+  - id: readiness
+    uses: stages/readiness
+    needs: [document]
+    inputs:
+      change_summary: "implement:change_summary"
+      verification_report: "verify:verification_report"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/release.md
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Site Reliability Engineer on call for this service the night it ships"
+    skills:
+      - uses: skillpacks/addyosmani/shipping-and-launch
+      - uses: skillpacks/addyosmani/observability-and-instrumentation
+      - uses: skillpacks/distinguished-engineer/failure-domain-thinking
+
+  - id: deliver
+    uses: stages/deliver
+    needs: [readiness]
+    inputs:
+      change_summary: "implement:change_summary"
+      verification_report: "verify:verification_report"
+      requirements: "intake:requirements"
+      readiness_report: "readiness:readiness_report"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          checklist: policies/gates/release.md
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Non-technical stakeholder who must understand what changed, why, and what risk remains"
+    skills:
+      - uses: skillpacks/addyosmani/shipping-and-launch
+
+  - id: retrospect
+    uses: stages/retrospect
+    needs: [deliver]
+    inputs:
+      run_dir: "workflow:run_dir"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "failure misclassification, proposals that would weaken gates or permissions, evidence-free claims"
+    skills:
+      - uses: skillpacks/addyosmani/debugging-and-error-recovery
+      - uses: skillpacks/distinguished-engineer/problem-framing
+
+outputs:
+  - name: delivered_change
+    from: "deliver:delivery_package"
+  - name: verification_report
+    from: "verify:verification_report"
+  - name: readiness_report
+    from: "readiness:readiness_report"
+  - name: retrospective
+    from: "retrospect:retrospective"
