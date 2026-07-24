@@ -3,6 +3,9 @@ id: test-of-tests
 summary: "Mutation-style test-quality gate: deliberately broken code must make the suite fail; a test suite that cannot fail cannot verify."
 agent: test-auditor
 parameters:
+  - name: target_repo
+    description: "Root of the repository whose tests are audited — bind `workflow:target_repo`. The stage's artifacts list changed paths relative to this root; without it there is nothing to copy, mutate, or run."
+    required: true
   - name: focus
     description: "Optional narrowing of the mutation target (e.g. 'the auth module only')."
     required: false
@@ -25,7 +28,8 @@ false signal can certify anything downstream.
 ## Method
 
 1. From the stage's artifacts (`diff_manifest.json`, `change_summary.md`),
-   enumerate the changed behavior and the tests that claim to cover it.
+   enumerate the changed behavior and the tests that claim to cover it,
+   resolving every listed path against the `target_repo` parameter.
    Honor the `focus` parameter if given.
 2. Run those tests once, unmutated, as a baseline. A failing or erroring
    baseline is itself a `fail` — mutations on top of a red baseline prove
@@ -34,10 +38,10 @@ false signal can certify anything downstream.
    the changed code: invert a conditional, off-by-one a boundary, delete a
    guard or validation, swap a return value. Prefer mutations on the
    behavior the acceptance criteria name.
-4. For each mutation: apply it in a throwaway copy of the target repo (or a
-   git-revertible edit that is fully restored — see the persona's hard
-   rules), run the relevant tests, and record kill (tests fail) or survive
-   (tests pass) with verbatim output.
+4. For each mutation: apply it in a throwaway copy of the repo at
+   `target_repo` (or a git-revertible edit that is fully restored — see the
+   persona's hard rules), run the relevant tests, and record kill (tests
+   fail) or survive (tests pass) with verbatim output.
 5. Restore everything and prove the tree is clean before returning.
    If fewer than `min_mutations` mutations were feasible, say why in the
    verdict — an unexplained shortfall is a `fail`.

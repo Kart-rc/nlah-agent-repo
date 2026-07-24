@@ -147,6 +147,7 @@ stages:
       - uses: validators/red-team
       - uses: validators/test-of-tests
         with:
+          target_repo: "workflow:target_repo"
           min_mutations: 3
     skills:
       - uses: skillpacks/addyosmani/incremental-implementation
@@ -181,10 +182,12 @@ stages:
     validators:
       - uses: validators/completeness-check
         with:
+          target_repo: "workflow:target_repo"
           extra_check: "artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
       - uses: validators/persona-reviewer
         with:
           persona: "New team member using only the updated docs to understand, run, and roll back the change"
+          target_repo: "workflow:target_repo"
     skills:
       - uses: skillpacks/addyosmani/documentation-and-adrs
       - uses: skillpacks/geoffreylitt/code-explainers

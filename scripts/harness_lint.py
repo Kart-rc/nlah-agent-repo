@@ -13,6 +13,8 @@ Checks (cross-reference layer, what JSON Schema can't express):
   - `needs` graph is acyclic; stage ids unique; needs refer to declared stages
   - input bindings reference `workflow:` inputs that exist, or `<stage>:<output>`
     where <stage> is in the transitive needs and <output> is declared by it
+  - validator `with` blocks supply every required parameter, pass no
+    undeclared ones, and binding-shaped values (HARNESS.md §3.1.5) resolve
   - manifest outputs bind to declared stage outputs
   - stage.md bodies contain all required section headings
   - risk-policy.yaml refs (validators, gate checklists, stage selectors) exist
@@ -51,6 +53,7 @@ REQUIRED_STAGE_SECTIONS = [
     "Summary requirement",
 ]
 REQUIRED_VALIDATOR_SECTIONS = ["Mission", "Method", "Verdict format", "Independence rules"]
+BINDING_RE = re.compile(r"^(workflow|[a-z][a-z0-9-]*):[a-z][a-z0-9_]*$")
 REQUIRED_ADAPTER_SECTIONS = [
     "What this source knows",
     "How to query",
@@ -247,6 +250,7 @@ def lint_manifest(path: Path, stages: dict[str, dict], validators: dict[str, dic
         contract = stages.get(stage_lib_id)
 
         # validator attachments
+        allowed_sources = transitive_needs(sid, by_id)
         vlist = s["validators"]
         first = vlist[0]["uses"].split("/", 1)[1] if vlist else None
         if first != "completeness-check":
@@ -257,6 +261,27 @@ def lint_manifest(path: Path, stages: dict[str, dict], validators: dict[str, dic
             vc = validators.get(v["uses"].split("/", 1)[1])
             if vc:
                 vagents.add(vc["agent"])
+            with_block = v.get("with") or {}
+            if vc is not None:
+                declared = {p["name"] for p in vc.get("parameters", [])}
+                required = {p["name"] for p in vc.get("parameters", []) if p["required"]}
+                for missing in sorted(required - set(with_block)):
+                    err(path, f"stage '{sid}': validator '{v['uses']}' missing required parameter '{missing}'")
+                for unknown in sorted(set(with_block) - declared):
+                    err(path, f"stage '{sid}': validator '{v['uses']}' passes undeclared parameter '{unknown}'")
+            for key, value in with_block.items():
+                if not (isinstance(value, str) and BINDING_RE.match(value)):
+                    continue  # literal parameter, passed verbatim
+                src, out = value.split(":", 1)
+                if src == "workflow":
+                    if out not in workflow_inputs:
+                        err(path, f"stage '{sid}': validator '{v['uses']}' parameter '{key}' binds unknown workflow input '{out}'")
+                elif src != sid and src not in allowed_sources:
+                    err(path, f"stage '{sid}': validator '{v['uses']}' parameter '{key}' binds stage '{src}' which is not this stage or in its transitive needs")
+                else:
+                    src_contract = stages.get(by_id[src]["uses"].split("/", 1)[1])
+                    if src_contract and out not in {o["name"] for o in src_contract["outputs"]}:
+                        err(path, f"stage '{sid}': validator '{v['uses']}' parameter '{key}' binds '{src}:{out}' but '{src}' declares no output '{out}'")
         if contract and contract["producer"] in vagents:
             err(path, f"stage '{sid}': producer persona '{contract['producer']}' also validates its own output")
 
@@ -266,7 +291,6 @@ def lint_manifest(path: Path, stages: dict[str, dict], validators: dict[str, dic
             check_uses_exists(entry["uses"], path)
 
         # bindings
-        allowed_sources = transitive_needs(sid, by_id)
         declared_inputs = {i["name"] for i in contract["inputs"]} if contract else None
         required_inputs = {i["name"] for i in contract["inputs"] if i["required"]} if contract else set()
         for name, binding in s.get("inputs", {}).items():
@@ -306,7 +330,7 @@ def lint_manifest(path: Path, stages: dict[str, dict], validators: dict[str, dic
 
 # ---------------------------------------------------------------- policies
 
-def lint_risk_policy(stages_in_manifests: set[str]) -> None:
+def lint_risk_policy(stages_in_manifests: set[str], validators: dict[str, dict]) -> None:
     path = HARNESS / "policies" / "risk-policy.yaml"
     if not path.is_file():
         err(path, "missing risk-policy.yaml")
@@ -326,7 +350,16 @@ def lint_risk_policy(stages_in_manifests: set[str]) -> None:
             continue
         for v in spec.get("additional_validators", []) or []:
             check_uses_exists(v["uses"], path)
-            checklist = (v.get("with") or {}).get("checklist")
+            vc = validators.get(v["uses"].split("/", 1)[1])
+            with_block = v.get("with") or {}
+            if vc is not None:
+                declared = {p["name"] for p in vc.get("parameters", [])}
+                required = {p["name"] for p in vc.get("parameters", []) if p["required"]}
+                for missing in sorted(required - set(with_block)):
+                    err(path, f"risk level '{level}': validator '{v['uses']}' missing required parameter '{missing}'")
+                for unknown in sorted(set(with_block) - declared):
+                    err(path, f"risk level '{level}': validator '{v['uses']}' passes undeclared parameter '{unknown}'")
+            checklist = with_block.get("checklist")
             if checklist and not (HARNESS / checklist).is_file():
                 err(path, f"risk level '{level}': checklist '{checklist}' not found under harness/")
             at = v.get("at_stage")
@@ -355,7 +388,7 @@ def main() -> int:
         except Exception:
             pass
 
-    lint_risk_policy(manifest_stage_ids)
+    lint_risk_policy(manifest_stage_ids, validators)
 
     if errors:
         print(f"harness lint: {len(errors)} finding(s)\n")

@@ -177,7 +177,10 @@
       "additionalProperties": false,
       "properties": {
         "uses": { "type": "string", "pattern": "^validators/[a-z][a-z0-9-]*$" },
-        "with": { "type": "object" },
+        "with": {
+          "type": "object",
+          "description": "Validator parameters. A string value that is exactly an input binding (\"workflow:<input>\" or \"<stage>:<output>\") is resolved to its path at gate time (HARNESS.md §3.1.5); all other values pass verbatim."
+        },
         "required": { "type": "boolean", "default": true }
       }
     },

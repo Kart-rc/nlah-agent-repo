@@ -32,9 +32,12 @@ acceptance_criteria:
   - "Every target-repo file modified by this stage appears in docs_update.md with a rationale."
 default_validators:
   - uses: validators/completeness-check
+    with:
+      target_repo: "workflow:target_repo"
   - uses: validators/persona-reviewer
     with:
       persona: "New team member using only the updated docs to understand, run, and roll back the change"
+      target_repo: "workflow:target_repo"
 knowledge_slots: [org-context]
 skill_refs:
   - skillpacks/addyosmani/documentation-and-adrs

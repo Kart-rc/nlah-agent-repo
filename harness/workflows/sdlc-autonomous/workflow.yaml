@@ -118,6 +118,7 @@ stages:
       - uses: validators/red-team
       - uses: validators/test-of-tests
         with:
+          target_repo: "workflow:target_repo"
           min_mutations: 3
     gate:
       max_repair_attempts: 3
@@ -149,9 +150,12 @@ stages:
       target_repo: "workflow:target_repo"
     validators:
       - uses: validators/completeness-check
+        with:
+          target_repo: "workflow:target_repo"
       - uses: validators/persona-reviewer
         with:
           persona: "New team member using only the updated docs to understand, run, and roll back the change"
+          target_repo: "workflow:target_repo"
     skills:
       - uses: skillpacks/addyosmani/documentation-and-adrs
       - uses: skillpacks/geoffreylitt/code-explainers
