@@ -93,8 +93,8 @@ operating controls (see `CLAUDE.md`).
 
 | Skill | What it does | Default attachment |
 |---|---|---|
-| [code-explainers](../harness/skillpacks/geoffreylitt/code-explainers/USAGE.md) | Literate explainer documents instead of raw diffs | ad hoc (natural home: `implement`/`verify`) |
-| [understanding-quizzes](../harness/skillpacks/geoffreylitt/understanding-quizzes/USAGE.md) | Comprehension quiz gating human review | ad hoc (natural home: `implement`/`verify`) |
+| [code-explainers](../harness/skillpacks/geoffreylitt/code-explainers/USAGE.md) | Literate explainer documents instead of raw diffs | `document` (sdlc-autonomous, sdlc-interactive) |
+| [understanding-quizzes](../harness/skillpacks/geoffreylitt/understanding-quizzes/USAGE.md) | Comprehension quiz gating human review | `sdlc-interactive`: `document`, `deliver` |
 | [micro-worlds](../harness/skillpacks/geoffreylitt/micro-worlds/USAGE.md) | Ephemeral interactive artifacts for runtime intuition | ad hoc (natural home: `implement`/`verify`) |
 
 ## `review-debt` — hidden review burden (1 skill)
@@ -102,3 +102,15 @@ operating controls (see `CLAUDE.md`).
 | Skill | What it does | Default attachment |
 |---|---|---|
 | [review-debt-code-review](../harness/skillpacks/review-debt/review-debt-code-review/USAGE.md) | Evidence-backed review of reviewability and review debt | ad hoc |
+
+## `teaching` — human-in-the-loop teaching (1 skill)
+
+| Skill | What it does | Default attachment |
+|---|---|---|
+| [explain-your-work](../harness/skillpacks/teaching/explain-your-work/USAGE.md) | EXPLAIN.md per stage — what/why/assumptions/rejected alternatives/what to check/questions for you — presented at human checkpoints; pair with its completeness-check `extra_check` | every stage (sdlc-interactive) |
+
+## `provenance` — context visibility (1 skill)
+
+| Skill | What it does | Default attachment |
+|---|---|---|
+| [context-register](../harness/skillpacks/provenance/context-register/USAGE.md) | Gathering stages emit a source register; consuming stages cite `[context: CR-n]`; `retrospect` reports cited vs never-cited | `intake`, `design`, `plan` (sdlc-autonomous, sdlc-interactive) |

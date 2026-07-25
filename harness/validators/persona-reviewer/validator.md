@@ -9,6 +9,9 @@ parameters:
   - name: checklist
     description: "Path under harness/ to a gate checklist applied through the persona's eyes."
     required: false
+  - name: target_repo
+    description: "Root of the target repository — bind `workflow:target_repo` when the persona must read files the artifacts reference in the target tree (e.g. the updated docs themselves, not just their manifest)."
+    required: false
 verdict_file: verdict.json
 ---
 
@@ -26,7 +29,9 @@ parameter, get a different independent review.
 1. Become the persona in the `persona` parameter. Write down (internally) the
    five questions this stakeholder always asks of work like this.
 2. Interrogate the artifacts for each question: is it answered, evidenced,
-   and honest about uncertainty?
+   and honest about uncertainty? If a `target_repo` parameter is provided,
+   follow the paths the artifacts reference into that tree and judge the
+   referenced files themselves.
 3. Apply the `checklist` items through the persona's priorities if provided.
 4. Identify what would make this stakeholder reject, veto, or be misled —
    those are your findings, each with what the persona asked, where the

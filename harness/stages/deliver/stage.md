@@ -15,6 +15,10 @@ inputs:
     description: "Original requirements (from intake)."
     format: markdown
     required: true
+  - name: readiness_report
+    description: "The readiness stage's report, when the workflow includes one."
+    format: markdown
+    required: false
 outputs:
   - name: delivery_package
     file: delivery.md
@@ -56,7 +60,9 @@ legible and actionable.
 4. Digest the evidence: per requirement, met/not-met with a pointer into the
    verification report. Carry forward every gap visibly.
 5. Write release guidance (how to ship: merge/deploy/flag) and the rollback
-   procedure (from the design's rollback strategy, updated by reality).
+   procedure (from the design's rollback strategy, updated by reality). If a
+   readiness report is provided, carry its verdict, conditions, and rollback
+   procedure into the package verbatim.
 6. List follow-ups: deferred plan items, verification gaps, risks accepted.
 
 ## Output format constraints

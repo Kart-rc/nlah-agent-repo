@@ -40,8 +40,8 @@ Templates).
 
 | Skill | Discipline | Attached by default at |
 |---|---|---|
-| `code-explainers` | Literate explainer docs for changes: background first, intuition before details, literate code diff, markdown + HTML output ending in a quiz | none (ad hoc — see below) |
-| `understanding-quizzes` | ~5-question comprehension quiz per change; the speed-regulator rule: no review request until the responsible human passes | none (ad hoc — see below) |
+| `code-explainers` | Literate explainer docs for changes: background first, intuition before details, literate code diff, markdown + HTML output ending in a quiz | `document` (stage `skill_refs` + the `sdlc-autonomous` / `sdlc-interactive` manifests) |
+| `understanding-quizzes` | ~5-question comprehension quiz per change; the speed-regulator rule: no review request until the responsible human passes | `sdlc-interactive`: `document` and `deliver` |
 | `micro-worlds` | Ephemeral interactive artifacts (state debuggers, step-through replays, simulations) wired to real code, built to be inhabited then discarded | none (ad hoc — see below) |
 
 All three are deliberately standalone: attach them ad hoc with a one-line
@@ -58,7 +58,9 @@ They also work well outside the harness — see
 
 ## Relationship to workflows
 
-No workflow attaches these by default; they are opt-in overlays for work
+The sdlc family's `document` stage attaches `code-explainers` by default,
+and `sdlc-interactive` closes its `document` and `deliver` stages with
+`understanding-quizzes`; beyond that they are opt-in overlays for work
 where human understanding of agent-written code is itself a deliverable.
 Stage documents suggest defaults in their `skill_refs` frontmatter; the
 workflow-composer materializes those into new manifests, where you can

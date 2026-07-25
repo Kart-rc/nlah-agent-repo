@@ -20,7 +20,7 @@ as the full text was unreachable from the build environment.)
 |---|---|---|
 | **Runtime charter** | Policy/semantics the runtime enforces, separate from harness logic | `HARNESS.md` (principles, protocol, state semantics, prompt templates) |
 | **Contracts** | Required inputs/outputs, format constraints, validation gates, permission boundaries, stop/retry rules | `harness/schema/*.json` + document frontmatter (stages, validators, adapters) + manifest gate policies |
-| **Roles** | Distinct personas with non-overlapping responsibilities | `.claude/agents/` — 3 producers (planner, builder, analyst), 4 validators; producer ∉ validators enforced by lint |
+| **Roles** | Distinct personas with non-overlapping responsibilities | `.claude/agents/` — 3 producers (planner, builder, analyst), 5 validators; producer ∉ validators enforced by lint |
 | **Stage structure** | Explicit topology (plan → execute → verify → repair) | `workflow.yaml` manifests: `stages` + `needs` DAG; repair loop in HARNESS.md §3.1 |
 | **State semantics** | State externalized to path-addressable artifacts, survives context resets | `runs/<id>/` layout: `task_state.json` resume anchor, per-stage artifacts, `events.jsonl` |
 | **Failure taxonomy** | Named error modes triggering specific recovery | `docs/failure-taxonomy.md` (F1–F7) |
@@ -103,6 +103,20 @@ subagent whose prompt is composed from the HARNESS.md §7 templates:
   filesystem scoping; accepted residual risk for the docs-first runtime.
 - **Red-team may execute but never persist.** Its persona has Bash for
   probing; its hard rules forbid state mutation. Same SDK-sandbox note applies.
+  `test-auditor` extends this one notch: it may apply temporary mutations —
+  in throwaway copies of the target repo, or as git-revertible edits — and
+  its verdict is invalid without quoted restoration proof
+  (`git status --porcelain`).
+- **Execution mode is a routing dimension, not a new protocol.** The sdlc
+  family ships one composition at three modes (`sdlc`, `sdlc-autonomous`,
+  `sdlc-interactive`), selected by the router's Step 3b rubric — autonomous
+  only with a strong spec-aligned verifier, reversible actions, and contained
+  blast radius. The human-in-the-loop gating is data, not machinery:
+  manifests may declare `approval_checkpoints` (`block`/`notify`) that merge
+  with the risk overlay at lock time, and HARNESS.md §3.1 honors whatever the
+  lock declares — no protocol fork between modes. The mid-run
+  autonomous→interactive flip is the §5 tighten-only lock edit plus a
+  `mode_flipped` event; loosening mid-run is never allowed.
 
 ## SDK-readiness
 

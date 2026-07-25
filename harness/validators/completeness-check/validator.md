@@ -9,6 +9,9 @@ parameters:
   - name: checklist
     description: "Path under harness/ to a gate checklist (policies/gates/*.md) whose items are verified as addressed."
     required: false
+  - name: target_repo
+    description: "Root of the target repository — bind `workflow:target_repo` for stages whose artifacts list target-repo paths (e.g. a docs or diff manifest), so each listed path can be resolved and checked against the actual tree."
+    required: false
 verdict_file: verdict.json
 ---
 
@@ -31,7 +34,12 @@ is binary, and its failures produce the clearest repair instructions.
 4. For each acceptance criterion (and each item of `extra_check` /
    `checklist` if provided): is it *addressed* — does content exist that
    speaks to it? You are checking presence, not quality.
-5. Anything in `artifacts/` that the contract does not declare or explicitly
+5. If a `target_repo` parameter is provided: resolve every target-repo path
+   the artifacts list against it and check mechanically — the file exists,
+   matches its declared action, and satisfies any path-scoped criterion
+   (e.g. "documentation files only"). A listed path that does not resolve
+   is a finding.
+6. Anything in `artifacts/` that the contract does not declare or explicitly
    allow is a finding (scope drift signal, class F4).
 
 ## Verdict format
