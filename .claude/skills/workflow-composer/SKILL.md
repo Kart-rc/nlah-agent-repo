@@ -22,6 +22,20 @@ a manifest, then proving it with lint + dry-run. The manifest schema is
 
 ## Create mode
 
+### 0. Fit check
+
+Before interviewing, glob `harness/workflows/*/workflow.yaml` and read ONLY each
+`workflow.intent` block. If an existing workflow's intent already covers the
+request, say so and stop — hand back to `agentic-delivery-router` rather than
+creating a near-duplicate. A second manifest claiming the same intent makes the
+router's workflow selection ambiguous (failure class F7) for every future request,
+not just this one.
+
+If the `harness-navigator` skill already ran this check, it hands you a COMPOSER
+HANDOFF block carrying the result and pre-filled Step 1 answers: do not repeat the
+fit check, and do not re-ask what it pre-filled. That block covers Step 1 only —
+validators, skills, bindings, and gate defaults remain yours to materialize below.
+
 ### 1. Interview
 
 Collect: workflow id (slug) and name; the goal and final deliverables; intent

@@ -19,18 +19,19 @@ frontmatter (materialized into new manifests by workflow-composer) and/or
 attached in a shipped workflow manifest. "ad hoc" = no default; attach it
 explicitly where its USAGE.md suggests.
 
-## `.claude/skills` — Claude Code runtime skills (5 skills)
+## `.claude/skills` — Claude Code runtime skills (6 skills)
 
 These are a different category from the practice skills below: Claude Code
 discovers them automatically and triggers them from their frontmatter
 `description`, or you invoke them by name in conversation. They are not
-attached to workflow stages. The router and composer are the harness's
-operating controls (see `CLAUDE.md`).
+attached to workflow stages. The router, composer, and navigator are the
+harness's operating controls (see `CLAUDE.md`).
 
 | Skill | What it does | How it runs |
 |---|---|---|
 | [agentic-delivery-router](../.claude/skills/agentic-delivery-router/USAGE.md) | Entry point for any delivery request: classifies work type + risk, applies gates, orchestrates the workflow per HARNESS.md; resumes runs | Triggered by any non-trivial delivery request, or invoked by name |
 | [workflow-composer](../.claude/skills/workflow-composer/USAGE.md) | Creates/modifies workflow manifests from existing stages, validators, adapters, skill packs; lints and dry-runs | Invoked when you ask for a new/changed workflow |
+| [harness-navigator](../.claude/skills/harness-navigator/USAGE.md) | Off-ramp advisor for work that is not going through a shipped workflow: inventories skills/workflows/stages via subagents, interviews you, then returns reasoning plus one command — a standalone sequence or a pre-filled composer handoff | Triggered by meta-questions ("which skills should I use", "I don't want a full workflow") |
 | [architecture-decision-records](../.claude/skills/architecture-decision-records/USAGE.md) | Drives and records architectural decisions as ADRs calibrated to enterprise context | Triggered when a significant technical choice is made or questioned |
 | [bootstrap-claude-context](../.claude/skills/bootstrap-claude-context/USAGE.md) | Installs a layered, self-improving Claude Code context scaffold into a repository | Invoked when onboarding a repo to Claude Code |
 | [okf-second-brain](../.claude/skills/okf-second-brain/USAGE.md) | Creates and incrementally grows a personal second brain as an OKF v0.1 knowledge bundle (typed markdown concepts, indexes, change log, conformance validator) | Triggered when starting a second brain or saving/ingesting a document, URL, or insight into it |
@@ -62,7 +63,7 @@ operating controls (see `CLAUDE.md`).
 | [source-driven-development](../harness/skillpacks/addyosmani/source-driven-development/USAGE.md) | Official-documentation-grounded implementation | ad hoc |
 | [spec-driven-development](../harness/skillpacks/addyosmani/spec-driven-development/USAGE.md) | Specs before code | `intake`, `design` (sdlc) |
 | [test-driven-development](../harness/skillpacks/addyosmani/test-driven-development/USAGE.md) | Failing test first; tests as proof | `implement` (sdlc) |
-| [using-agent-skills](../harness/skillpacks/addyosmani/using-agent-skills/USAGE.md) | Meta-skill: discover and route to other skills | standalone router only |
+| [using-agent-skills](../harness/skillpacks/addyosmani/using-agent-skills/USAGE.md) | Meta-skill: discover and route among this pack's 24 skills | standalone, in-pack routing (start from `harness-navigator` for the full library) |
 
 ## `tech-director` — technical judgment and leadership (7 skills)
 

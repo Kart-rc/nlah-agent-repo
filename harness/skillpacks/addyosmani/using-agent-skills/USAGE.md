@@ -16,11 +16,19 @@ typical lifecycle sequence across the other 23 skills.
 
 SKILL.md has no "When to Use" section, so route on these cues:
 
-- You are working standalone (no harness run) and want a lightweight
-  router: `docs/using-skills-standalone.md` explicitly designates this
-  skill as the standalone substitute for the harness's routing.
+- **Start with `harness-navigator`, not here, when you are choosing a path
+  for a task.** This skill's decision tree and quick-reference table cover
+  only this pack's 24 skills — they predate and do not know about the other
+  six packs, the workflow and stage libraries, or the harness's own runtime
+  skills. `.claude/skills/harness-navigator/` discovers all of them
+  dynamically and hands back a concrete command.
+- Once you are in standalone mode and working *within this pack*, this skill
+  is the right meta-router: it maps a development phase to the pack skill
+  that covers it.
 - At the start of a standalone session touching this pack, so skill
-  selection and the core operating behaviors are loaded once up front.
+  selection and the core operating behaviors are loaded once up front. Note
+  that `harness-navigator` does not set those behaviors — it picks a path
+  and exits — so load this skill too when you want them active.
 - You are unsure which pack skill fits a task and want the decision tree
   and quick-reference table rather than reading 24 SKILL.md files.
 - Do not use it inside a harness run: there, work-type routing is the
@@ -86,5 +94,9 @@ tests and a review pass.
 The agent walks the tree — "something broke" → `debugging-and-error-recovery`,
 then `test-driven-development` (reproduction test first), then
 `code-review-and-quality` — reads each of those SKILL.md files in turn, and
-executes the sequence with assumptions surfaced up front, exactly the
-lightweight-router usage `docs/using-skills-standalone.md` describes.
+executes the sequence with assumptions surfaced up front.
+
+Note what this example does *not* reach: the deep-IC debugging and
+failure-domain skills in the other packs, which an escalation-tier version of
+the same bug would want. That is the boundary of this pack's tree — start from
+`harness-navigator` when you want the whole library considered.

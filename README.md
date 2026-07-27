@@ -27,13 +27,15 @@ structural changes — and `scripts/harness_lint.py` verifies every composition.
 ## How to use this repo
 
 There are four approaches, from fully harnessed to fully manual. Pick by how
-much enforcement the work needs:
+much enforcement the work needs — or, if you are not sure which applies, ask
+the `harness-navigator` skill: it inventories what is actually available and
+hands back the concrete command for the path that fits.
 
 | # | Approach | Use when | Entry point |
 |---|---|---|---|
 | 1 | **Run a delivery workflow** | You have a delivery task and want risk-scaled rigor: blocking gates, repair loops, approvals, resumable state | Just describe the task — the `agentic-delivery-router` skill routes it |
 | 2 | **Compose or modify a workflow** | The work type has no matching workflow, or you want to attach/detach/reorder modules | `workflow-composer` skill |
-| 3 | **Use practice skills standalone** | You want one discipline or a lightweight sequence and will manage handoffs and review yourself | [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) |
+| 3 | **Use practice skills standalone** | You want one discipline or a lightweight sequence and will manage handoffs and review yourself | `harness-navigator` skill, or [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) |
 | 4 | **Bootstrap Claude context in another repo** | A different repository needs Claude Code onboarding and layered project instructions | `bootstrap-claude-context` skill |
 
 ### 1. Run a delivery workflow (the default)
@@ -91,6 +93,11 @@ is needed.
 
 ### 3. Use practice skills standalone (no harness)
 
+The **harness-navigator** skill is the way in: it discovers the current skill,
+workflow, and stage libraries, interviews you about the task, and returns a
+standalone sequence with the reasoning behind it — or tells you when a shipped
+workflow or a new composition would serve you better.
+
 The 45 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
 distinguished-engineer, geoffreylitt, review-debt, teaching, and provenance
 packs) work directly in
@@ -129,6 +136,7 @@ Critical work cannot start without explicit human approval.
 | `HARNESS.md` | **The constitution**: runtime charter, orchestration protocol, state semantics, prompt templates |
 | `.claude/skills/agentic-delivery-router/` | Entry point: classify → select workflow → orchestrate |
 | `.claude/skills/workflow-composer/` | Create/modify workflow manifests (scaffold, lint, dry-run) |
+| `.claude/skills/harness-navigator/` | Off-ramp advisor when a shipped workflow is not wanted: inventory → interview → reasoning + one command |
 | `.claude/agents/` | Subagent personas: 3 producers, 5 validators (tool permissions = boundaries) |
 | `harness/workflows/` | Composed workflows: `sdlc`, `sdlc-autonomous`, `sdlc-interactive`, `proposal`, `tech-decision`, `architecture-review` |
 | `harness/stages/` | Stage library (15 stages; `intake` is shared across workflows) |

@@ -5,7 +5,7 @@ Code without starting a harness workflow. Standalone use is useful when you
 want one discipline or a lightweight sequence and are prepared to manage the
 handoffs and review points yourself.
 
-This guide covers all five packs:
+This guide covers all seven packs:
 
 - `harness/skillpacks/addyosmani/`: 24 engineering lifecycle skills, including
   the `using-agent-skills` meta-skill.
@@ -25,6 +25,14 @@ This guide covers all five packs:
   and `micro-worlds` when reading alone gives no feel for runtime behavior.
 - `harness/skillpacks/review-debt/`: 1 skill for evidence-backed review of
   reviewability and hidden review debt.
+- `harness/skillpacks/teaching/`: 1 skill that writes an `EXPLAIN.md` teaching
+  artifact alongside a deliverable — what was done, why, what was assumed, what
+  was rejected, and what to check. Useful standalone wherever a human has to
+  understand output they did not produce.
+- `harness/skillpacks/provenance/`: 1 skill for context registers — record every
+  source consulted, then cite it on the decisions it supports. Standalone, the
+  register is only as good as your discipline in citing it; there is no
+  completeness check enforcing the pairing.
 
 ## What standalone mode does not provide
 
@@ -42,9 +50,16 @@ one or more skills does **not** activate the orchestration protocol in
 | Externalized, resumable run state | You maintain explicit artifact paths and handoff notes. |
 
 The harness-specific `agentic-delivery-router` and `workflow-composer` skills
-are therefore **not** part of the standalone sequences below. Use
-`using-agent-skills` as the lightweight standalone router. Use the full harness
-when you need its stronger execution and validation guarantees.
+are therefore **not** part of the standalone sequences below. Use the full
+harness when you need its stronger execution and validation guarantees.
+
+To pick a standalone path, start with the **`harness-navigator`** skill: it
+inventories this repository's actual skills, workflows, and stages, interviews
+you about the task, and hands back a concrete command — including the case where
+a shipped workflow turns out to fit after all. `using-agent-skills` remains the
+in-sequence meta-router *within the addyosmani pack*: its decision tree maps a
+development phase onto one of that pack's 24 skills, and it sets the six Core
+Operating Behaviors for the session. It does not know about the other six packs.
 
 ## Choose a usage mode
 
@@ -59,11 +74,10 @@ Use this mode while Claude Code has access to this repository and you do not
 want to install anything. Start with this prompt:
 
 ```text
-Read harness/skillpacks/addyosmani/using-agent-skills/SKILL.md fully.
-
-For the task below, select the smallest applicable standalone skill sequence.
-Before each step, read that skill's SKILL.md fully, state the input artifacts,
-expected output artifact, and verification evidence, then follow the skill.
+Use the harness-navigator skill to select the smallest applicable standalone
+skill sequence for the task below. Before each step, read that skill's SKILL.md
+fully, state the input artifacts, expected output artifact, and verification
+evidence, then follow the skill.
 
 Do not invoke .claude/skills/agentic-delivery-router or
 .claude/skills/workflow-composer. Do not initialize runs/ or claim that a
@@ -96,8 +110,8 @@ direct `/skill-name` invocation. From the root of this repository, run:
 repo_root="$(git rev-parse --show-toplevel)"
 mkdir -p "$HOME/.claude/skills"
 
-for pack in addyosmani tech-director distinguished-engineer geoffreylitt review-debt; do
-  for source in "$repo_root/harness/skillpacks/$pack"/*; do
+for pack in "$repo_root/harness/skillpacks"/*/; do
+  for source in "$pack"*; do
     [ -f "$source/SKILL.md" ] || continue
     name="$(basename "$source")"
     target="$HOME/.claude/skills/$name"
@@ -113,11 +127,19 @@ for pack in addyosmani tech-director distinguished-engineer geoffreylitt review-
 done
 ```
 
-The loop only copies directories containing `SKILL.md` and skips every target
-that already exists. It never overwrites a personal skill. Review skipped
-names before deciding whether to keep the existing skill, rename one copy, or
-use one-off path loading. Personal skills take precedence over project skills
-with the same name.
+The loop discovers packs by globbing `harness/skillpacks/`, so a pack added
+later installs without editing this command. It only copies directories
+containing `SKILL.md` — which skips each pack's `README.md` and `LICENSE` — and
+skips every target that already exists. It never overwrites a personal skill.
+Review skipped names before deciding whether to keep the existing skill, rename
+one copy, or use one-off path loading. Personal skills take precedence over
+project skills with the same name.
+
+Note that installing the pack meta-skill `using-agent-skills` personally makes
+it auto-discoverable in every project, where its description ("discover which
+skill applies") overlaps `harness-navigator`'s. They are not interchangeable:
+the navigator knows this repository's full library, the pack meta-skill knows
+its own 24 skills. Invoke the one you want by name if the wrong one triggers.
 
 In Claude Code, run `/skills` and confirm the expected names appear. If the
 top-level `~/.claude/skills` directory was created after the session started,
@@ -177,7 +199,7 @@ Use the smallest sequence that covers the task. The markers in the tables mean:
 
 ```mermaid
 flowchart TD
-    A["Start: using-agent-skills"] --> B{"What kind of work is this?"}
+    A["Start: harness-navigator"] --> B{"What kind of work is this?"}
     B -->|"Feature or change"| C["Define → plan → build/test loop → review → ship"]
     B -->|"Bug"| D["Reproduce → regression test → fix → review"]
     B -->|"Technical decision"| E["Evidence → options → decision → record"]
@@ -197,7 +219,7 @@ flowchart TD
 
 | Order | Skill | Marker | Use and handoff |
 |---:|---|:---:|---|
-| 1 | `using-agent-skills` | **R** | Classify the task and select the minimum sequence. |
+| 1 | `harness-navigator` | **R** | Classify the task and select the minimum sequence. |
 | 2 | `interview-me` | **C** | Use when the desired outcome or constraints are unclear. Produce clarified requirements. |
 | 3 | `idea-refine` | **C** | Use when alternatives need to be generated or narrowed. Produce a selected direction and tradeoffs. |
 | 4 | `spec-driven-development` | **R** | Produce requirements, acceptance criteria, scope, and non-goals before code. |
@@ -228,7 +250,7 @@ skills marked **∥** constrain the slices while they are being built.
 
 | Order | Skill | Marker | Use and handoff |
 |---:|---|:---:|---|
-| 1 | `using-agent-skills` | **R** | Confirm this is corrective work rather than an unspecified behavior change. |
+| 1 | `harness-navigator` | **R** | Confirm this is corrective work rather than an unspecified behavior change. |
 | 2 | `debugging-and-error-recovery` | **R** | Reproduce, collect evidence, and localize the cause before editing. |
 | 3 | `test-driven-development` | **R ↻** | Add a failing regression test, make the smallest fix, and prove it passes. |
 | 4 | `incremental-implementation` | **C ↻** | Use when the fix needs more than one independently verifiable slice. |
@@ -247,7 +269,7 @@ resisted a routine debugging attempt.
 
 | Order | Skill | Marker | Use and handoff |
 |---:|---|:---:|---|
-| 1 | `using-agent-skills` | **R** | Confirm the escalation tier: routine debugging stalled, or the failure crosses ownership boundaries. |
+| 1 | `harness-navigator` | **R** | Confirm the escalation tier: routine debugging stalled, or the failure crosses ownership boundaries. |
 | 2 | `problem-framing` | **C** | Use when the failure itself is unowned or its scope is contested. Produce the problem statement before diagnosis. |
 | 3 | `deep-system-debugging` | **R** | Invariants, hypothesis tree with recorded kills, bisection, minimal repro. Produce the evidenced mechanism. |
 | 4 | `test-driven-development` | **R** | Encode the repro as a failing regression test; prove the fix by the mechanism, not by disappearance. |
@@ -259,7 +281,7 @@ resisted a routine debugging attempt.
 
 | Order | Skill | Marker | Use and handoff |
 |---:|---|:---:|---|
-| 1 | `using-agent-skills` | **R** | Confirm the deliverable is a decision, not implementation or a persuasion document. |
+| 1 | `harness-navigator` | **R** | Confirm the deliverable is a decision, not implementation or a persuasion document. |
 | 2 | `interview-me` + `idea-refine` | **C** | Clarify the decision, options, deadline, drivers, and constraints. |
 | 3 | `context-engineering` | **R** | Identify the internal evidence and stakeholders needed for the decision. |
 | 4 | `source-driven-development` | **R** | Collect primary-source evidence for external capabilities and constraints. |
@@ -275,7 +297,7 @@ resisted a routine debugging attempt.
 
 | Order | Skill | Marker | Use and handoff |
 |---:|---|:---:|---|
-| 1 | `using-agent-skills` | **R** | Confirm there is an existing design, RFC, or codebase to judge. |
+| 1 | `harness-navigator` | **R** | Confirm there is an existing design, RFC, or codebase to judge. |
 | 2 | `context-engineering` | **R** | Load the subject, requirements, constraints, and operational context. |
 | 3 | `source-driven-development` | **R** | Gather relevant primary evidence and prior art without deciding yet. |
 | 4 | `architectural-judgement` | **R** | Assess reversibility, failure modes, operability, total cost, and fitness for requirements. |
@@ -288,7 +310,7 @@ resisted a routine debugging attempt.
 
 | Order | Skill | Marker | Use and handoff |
 |---:|---|:---:|---|
-| 1 | `using-agent-skills` | **R** | Identify the human outcome and keep accountable decisions with people. |
+| 1 | `harness-navigator` | **R** | Identify the human outcome and keep accountable decisions with people. |
 | 2 | `interview-me` | **C** | Clarify the situation, desired outcome, constraints, and missing perspectives. |
 | 3 | `people-leadership` | **R** | Structure delegation, feedback, coaching, or team-health action. |
 | 4 | `risk-mitigation` | **C ∥** | Use for reorganizations, staffing transitions, or changes with material delivery risk. |
@@ -305,8 +327,8 @@ Replace angle-bracketed placeholders before use.
 ### Feature
 
 ```text
-Read harness/skillpacks/addyosmani/using-agent-skills/SKILL.md fully and route
-this as a standalone feature sequence. Do not invoke the workflow harness.
+Use the harness-navigator skill to route this as a standalone feature sequence.
+Do not invoke the workflow harness.
 
 Goal: <feature outcome>
 Target repository: <path>
@@ -434,7 +456,7 @@ state from conversation memory.
 
 ### Claude chooses too many skills
 
-Return to `using-agent-skills` and ask for the smallest sequence that covers
+Return to `harness-navigator` and ask for the smallest sequence that covers
 the acceptance criteria. Conditional skills are triggered by actual UI, API,
 security, performance, browser, migration, CI, deployment, or organizational
 needs—not by the possibility that they might someday be useful.
