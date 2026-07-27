@@ -64,7 +64,7 @@ context-register and EXPLAIN.md clauses):
       - uses: validators/completeness-check
         with:
           checklist: policies/gates/requirements.md
-          extra_check: "artifacts/event-storm.md exists with sections Timeline, Hotspots, Ubiquitous language, Candidate seams; every timeline entry is a past-tense domain event naming its command and actor or explicitly marked as a gap; every hotspot appears in requirements.md's Open questions or Assumptions. event-storm.md is an allowed, expected artifact for this stage."
+          extra_check: "artifacts/event-storm.md exists and is an allowed, expected artifact for this stage; when the change touches business behaviour event-storm.md has the sections Timeline, Hotspots, Ubiquitous language, and Candidate seams (observations only), every timeline entry is a past-tense domain event naming its command and actor or explicitly marked as a gap, and every hotspot appears in requirements.md's Open questions or Assumptions; when the change touches no business behaviour (build, dependency, config, or pure-rename work) event-storm.md instead states 'Not applicable' with a one-sentence reason and nothing further is required of it."
 ```
 
 Without it the discipline is advisory, and a producer that writes
@@ -95,6 +95,10 @@ what standalone mode does not guarantee.
   `## Assumptions`, never settled inside the storm.
 - A glossary in stakeholder words, with competing usages preserved as
   conflicts rather than merged.
+- For a change with no business behaviour (build, dependency, config, pure
+  rename): an `event-storm.md` whose first line is `Not applicable` plus a
+  one-sentence reason, and nothing else. That is a pass, not a gap — the gate
+  accepts the claim but not silence.
 - Misapplication signs (from Red Flags): events named as commands or
   components, zero hotspots on an unmapped domain, or a bounded context /
   service / technology named anywhere in the artifact.

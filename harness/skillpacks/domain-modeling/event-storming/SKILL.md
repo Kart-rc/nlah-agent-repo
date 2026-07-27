@@ -29,8 +29,9 @@ answer.
 request is `addyosmani/interview-me` — that clarifies what the requester
 wants; this maps what the business does. Turning the map into contexts and
 aggregates is `domain-modeling/domain-driven-design` at the `design` stage.
-Skip it entirely for changes with no business behaviour: a build fix, a
-dependency bump, a rename, a config change.
+Skip the storm entirely for changes with no business behaviour — a build fix,
+a dependency bump, a rename, a config change — and record that judgement as
+described under *Output* rather than by writing nothing.
 
 ## Events First, in the Past Tense
 
@@ -140,6 +141,13 @@ these sections:
 - `## Candidate seams (observations only)` — pivotal events and language
   shifts, each with the open question it raises
 
+**When the change has no domain, say so in the file rather than omitting it.**
+A build fix, dependency bump, config change, or pure rename gets an
+`event-storm.md` whose first line is `Not applicable` plus a one-sentence
+reason. In a harness run the intake gate expects the artifact, and a
+one-line "not applicable" is a checkable claim; a missing file is
+indistinguishable from a producer that simply skipped the discipline.
+
 ## Common Rationalizations
 
 | Rationalization | Reality |
@@ -162,6 +170,8 @@ these sections:
 
 ## Verification
 
+- [ ] If the change touches no business behaviour, `event-storm.md` says
+      `Not applicable` with a reason — and the checks below do not apply
 - [ ] Every timeline entry is past tense and in the domain's vocabulary
 - [ ] Every event names its command and actor, or is marked as a gap
 - [ ] Policies ("whenever … then …") are recorded, not folded into events

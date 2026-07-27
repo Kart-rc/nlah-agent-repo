@@ -29,18 +29,25 @@ wrote the code first.
 module or API — versioning, compatibility, error shape — is
 `addyosmani/api-and-interface-design`; this skill decides what the contract is
 *about*. Containment, blast radius, and rollback are
-`distinguished-engineer/failure-domain-thinking`. And skip it entirely when
+`distinguished-engineer/failure-domain-thinking`. And skip the modelling entirely when
 there is no domain: CRUD screens, config plumbing, reporting pass-throughs,
-and build changes get worse when modelled, not better.
+and build changes get worse when modelled, not better — record that judgement
+as described under *Output* rather than by writing nothing.
 
 ## Language Before Structure
 
 The model's nouns are the business's nouns, or the model is fiction.
 
 - Take the vocabulary **from the event storm or the stakeholders**, not from
-  the existing schema. If `intake` produced an `event-storm.md`, its glossary
-  is the starting language; any rename must be **justified in the design**,
-  not performed silently.
+  the existing schema. In a harness run the storm is not a declared stage
+  output, so read it by path: if `run_dir` is among your inputs, look for
+  `<run_dir>/stages/intake/artifacts/event-storm.md` and read it before
+  designing. Its glossary is the starting language.
+- Carry the **source term** into the design's language table — one column for
+  the term as the storm (or the stakeholder) says it, `new` where the concept
+  has no prior name. Any row where the design's term differs from its source
+  carries a justification. A rename that is invisible in the artifact is a
+  rename nobody can review.
 - The chosen terms are the **names used in code** — types, functions,
   modules, events. A ubiquitous language that stops at the design doc is a
   glossary, and glossaries do not survive contact with a sprint.
@@ -150,8 +157,10 @@ The `design` stage requires real file and module references; so does the model.
 The `design` stage fixes `design.md`'s top-level sections and their order.
 **Do not add or reorder top-level sections.** Place the model as subsections:
 
-- Under `## Architecture`: `### Ubiquitous language` (term → meaning → the
-  code name it maps to), `### Bounded contexts and context map` (each context,
+- Under `## Architecture`: `### Ubiquitous language` (a table: term → source
+  term from the event storm or `new` → meaning → the code name it maps to →
+  justification wherever term and source differ),
+  `### Bounded contexts and context map` (each context,
   its subdomain type, the real modules it maps onto, and every integration
   with its named relationship), `### Aggregates and invariants` (each
   aggregate, the invariant it protects, its transactional boundary, and the
@@ -162,6 +171,12 @@ The `design` stage fixes `design.md`'s top-level sections and their order.
 - Mirror those decisions into `decisions.json` like any other key decision.
 - Eventual-consistency gaps and the failure behaviour of cross-context
   integrations belong under `## Failure modes and rollback`.
+
+**When the change has no domain, state that instead of modelling one.** For a
+build fix, dependency bump, config change, or pure rename, say so explicitly
+in `## Overview` — one sentence naming what kind of change it is — and write
+no domain model. The gate accepts that claim; it does not accept silence, and
+it does not accept a model invented to satisfy it.
 
 ## Common Rationalizations
 
@@ -189,8 +204,11 @@ The `design` stage fixes `design.md`'s top-level sections and their order.
 
 ## Verification
 
+- [ ] If the change touches no business behaviour, `## Overview` says so —
+      and the checks below do not apply
 - [ ] Every term in the ubiquitous language maps to a name used in the design
-- [ ] Terms renamed from the intake event storm are justified in the design
+- [ ] Every language row carries its source term (or `new`), and every row
+      where term and source differ carries a justification
 - [ ] Each bounded context states its subdomain type (core/supporting/generic)
 - [ ] Each context maps onto real modules/directories, or is named as new
 - [ ] Every cross-context integration names its relationship type and who

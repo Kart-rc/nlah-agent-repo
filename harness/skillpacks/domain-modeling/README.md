@@ -60,6 +60,20 @@ extra artifact *allowed* at all. The exact strings are in each skill's
 `USAGE.md`. Attaching the skill without the `extra_check` leaves the discipline
 advisory.
 
+Both gates are **conditional on the work being domain-bearing**: a build fix,
+dependency bump, config change, or pure rename passes by saying so — `Not
+applicable` with a reason in `event-storm.md`, a one-sentence statement in
+`design.md`'s Overview. The gate rejects silence, not the absence of a domain.
+
+**Wiring note:** `event-storm.md` is not a declared output of `stages/intake`,
+and a producer sees only its declared, bound inputs (`HARNESS.md` §7.1). The
+design stage therefore takes an optional `run_dir` input, bound from a
+`run_dir` workflow input, and reads the storm by path. Attaching
+`domain-driven-design` without that binding leaves the model blind to the
+storm — the same reason the design gate checks renames against a source-term
+column inside `design.md` rather than against the storm the validator cannot
+see.
+
 ## Relationship to workflows
 
 The three sdlc-family workflows attach both by default. The stage split is not

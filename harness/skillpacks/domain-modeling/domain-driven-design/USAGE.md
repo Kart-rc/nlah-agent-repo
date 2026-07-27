@@ -46,12 +46,22 @@ Attach to a stage in the workflow manifest (a one-line edit; use the
 stages:
   - id: design
     uses: stages/design
+    inputs:
+      run_dir: "workflow:run_dir"      # so the producer can read the intake event storm
     skills:
       - uses: skillpacks/domain-modeling/domain-driven-design
 ```
 
 The orchestrator passes the skill path to the stage's producer subagent,
 which reads it fully before starting (HARNESS.md §7.1).
+
+**Bind `run_dir` when `event-storming` ran upstream.** A producer receives
+only its stage's *declared, bound* inputs (HARNESS.md §7.1), and
+`event-storm.md` is not a declared output of `stages/intake` — so without this
+binding the model is built blind to the storm's timeline and glossary.
+`stages/design` declares `run_dir` as an optional input for exactly this;
+bind it from a `run_dir` workflow input (orchestrator-resolved at
+initialization, never requested from the user — see `sdlc`'s `inputs`).
 
 **Attach the paired `extra_check` too**, or the discipline stays advisory.
 Append this clause to the stage's completeness-check `with.extra_check`,
@@ -63,7 +73,7 @@ context-register and EXPLAIN.md clauses):
       - uses: validators/completeness-check
         with:
           checklist: policies/gates/architecture.md
-          extra_check: "design.md's Architecture section states the ubiquitous language terms used, the bounded context(s) the change touches with a named relationship for each cross-context integration, and each aggregate with the invariant it protects; any term renamed from the intake event storm is justified."
+          extra_check: "when the change touches business behaviour, design.md's Architecture section states the ubiquitous language as a table whose every row carries the source term from the intake event storm or 'new', with a justification on any row where the two differ, the bounded context(s) the change touches with a named relationship for each cross-context integration, and each aggregate with the invariant it protects; when the change touches no business behaviour, design.md states that explicitly and no domain model is required."
 ```
 
 Note the skill writes **no new artifact**: `stages/design` fixes `design.md`'s
@@ -89,6 +99,12 @@ what standalone mode does not guarantee.
 - `### Ubiquitous language`, `### Bounded contexts and context map`, and
   `### Aggregates and invariants` inside `design.md`'s existing
   `## Architecture` section — no new or reordered top-level sections.
+- A language table whose every row carries its source term from the event
+  storm (or `new`), with a justification wherever the design renamed it — so
+  a rename is reviewable from `design.md` alone.
+- For a change with no business behaviour (build, dependency, config, pure
+  rename): a one-sentence statement of that in `## Overview` and no domain
+  model at all. That is a pass, not a gap.
 - Every integration arrow carrying a named relationship (partnership,
   customer/supplier, conformist, anticorruption layer, shared kernel, open
   host / published language, separate ways) and who absorbs change.
