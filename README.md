@@ -98,9 +98,9 @@ workflow, and stage libraries, interviews you about the task, and returns a
 standalone sequence with the reasoning behind it — or tells you when a shipped
 workflow or a new composition would serve you better.
 
-The 45 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
-distinguished-engineer, geoffreylitt, review-debt, teaching, and provenance
-packs) work directly in
+The 47 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
+distinguished-engineer, geoffreylitt, review-debt, teaching, provenance, and
+domain-modeling packs) work directly in
 Claude Code — either
 loaded by path from this repo or installed once into `~/.claude/skills/` for
 `/skill-name` invocation across projects.
@@ -143,7 +143,7 @@ Critical work cannot start without explicit human approval.
 | `harness/validators/` | Validator library (5 types, parameterizable) |
 | `harness/knowledge/` | Knowledge adapters: `enterprise-mcp`, `second-brain` |
 | `harness/policies/` | Risk policy (risk → validators + approvals) and gate checklists |
-| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), original `distinguished-engineer` (deep-IC technical mastery), `geoffreylitt` (understanding AI-written code), `review-debt` (evidence-backed code-review burden), `teaching` (EXPLAIN.md at human checkpoints), and `provenance` (context registers and citations) |
+| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), original `distinguished-engineer` (deep-IC technical mastery), `geoffreylitt` (understanding AI-written code), `review-debt` (evidence-backed code-review burden), `teaching` (EXPLAIN.md at human checkpoints), `provenance` (context registers and citations), and `domain-modeling` (event storming at intake, domain-driven design at design) |
 | [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) | Claude Code setup, handoff contract, and sequences for using practice skills without the harness |
 | `harness/schema/` | JSON Schemas — the SDK-ready contracts for every document type |
 | `scripts/harness_lint.py` | Validates schemas, cross-refs, validator coverage, topology |

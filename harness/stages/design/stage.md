@@ -34,6 +34,7 @@ skill_refs:
   - skillpacks/addyosmani/spec-driven-development
   - skillpacks/addyosmani/api-and-interface-design
   - skillpacks/distinguished-engineer/failure-domain-thinking
+  - skillpacks/domain-modeling/domain-driven-design
 permissions:
   writes: [own_artifact_dir]
 ---

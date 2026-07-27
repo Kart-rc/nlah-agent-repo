@@ -87,7 +87,7 @@ stages:
       - uses: validators/completeness-check
         with:
           checklist: policies/gates/requirements.md
-          extra_check: "artifacts/context-register.md exists as a table with columns id, source, provenance, relevance, key claim it supports (ids CR-<n>); artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. Both are allowed, expected artifacts for this stage."
+          extra_check: "artifacts/context-register.md exists as a table with columns id, source, provenance, relevance, key claim it supports (ids CR-<n>); artifacts/event-storm.md exists with sections Timeline, Hotspots, Ubiquitous language, Candidate seams, every timeline entry a past-tense domain event naming its command and actor or explicitly marked as a gap, and every hotspot appearing in requirements.md's Open questions or Assumptions; artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. All three are allowed, expected artifacts for this stage."
       - uses: validators/adversarial-reviewer
         with:
           focus: "ambiguity, missing acceptance criteria, hidden assumptions"
@@ -95,6 +95,7 @@ stages:
       - uses: skillpacks/addyosmani/interview-me
       - uses: skillpacks/addyosmani/spec-driven-development
       - uses: skillpacks/provenance/context-register
+      - uses: skillpacks/domain-modeling/event-storming
       - uses: skillpacks/teaching/explain-your-work
 
   - id: design
@@ -107,7 +108,7 @@ stages:
       - uses: validators/completeness-check
         with:
           checklist: policies/gates/architecture.md
-          extra_check: "load-bearing design decisions cite [context: CR-n] entries from the intake stage's context register, or explicitly state that no external context informed them; artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
+          extra_check: "load-bearing design decisions cite [context: CR-n] entries from the intake stage's context register, or explicitly state that no external context informed them; design.md's Architecture section states the ubiquitous language terms used, the bounded context(s) the change touches with a named relationship for each cross-context integration, and each aggregate with the invariant it protects, and any term renamed from the intake event storm is justified; artifacts/EXPLAIN.md exists with sections: What I did, Why, What I assumed, What alternatives I rejected, What you should check, Questions for you. EXPLAIN.md is an allowed, expected artifact for this stage."
       - uses: validators/adversarial-reviewer
       - uses: validators/persona-reviewer
         with:
@@ -118,6 +119,7 @@ stages:
       - uses: skillpacks/addyosmani/documentation-and-adrs
       - uses: skillpacks/distinguished-engineer/failure-domain-thinking
       - uses: skillpacks/provenance/context-register
+      - uses: skillpacks/domain-modeling/domain-driven-design
       - uses: skillpacks/teaching/explain-your-work
 
   - id: plan
