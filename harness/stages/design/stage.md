@@ -11,6 +11,10 @@ inputs:
     description: "Path to the codebase to change."
     format: path
     required: true
+  - name: run_dir
+    description: "This run's directory (runs/<run-id>), for reading upstream stage artifacts that are not declared stage outputs - e.g. an intake event storm. Resolved by the orchestrator at initialization - never requested from the user."
+    format: path
+    required: false
 outputs:
   - name: design_doc
     file: design.md
@@ -34,6 +38,7 @@ skill_refs:
   - skillpacks/addyosmani/spec-driven-development
   - skillpacks/addyosmani/api-and-interface-design
   - skillpacks/distinguished-engineer/failure-domain-thinking
+  - skillpacks/domain-modeling/domain-driven-design
 permissions:
   writes: [own_artifact_dir]
 ---
@@ -49,6 +54,10 @@ an unambiguous target grounded in the real codebase.
 ## Procedure
 
 1. Read the requirements artifact fully; extract the list of requirement ids.
+   If `run_dir` is bound and an upstream artifact an attached skill depends on
+   exists under it — e.g. an intake event storm at
+   `<run_dir>/stages/intake/artifacts/event-storm.md` — read it before
+   designing. Absent, proceed from the requirements alone.
 2. Explore the target repo: locate the modules, patterns, and conventions the
    change must fit into. Prefer extending existing patterns over inventing new
    ones; note the pattern you are following.

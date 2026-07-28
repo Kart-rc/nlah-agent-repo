@@ -62,7 +62,7 @@ stages:
       - uses: validators/completeness-check
         with:
           checklist: policies/gates/requirements.md
-          extra_check: "artifacts/context-register.md exists as a table with columns id, source, provenance, relevance, key claim it supports; ids are CR-<n>. context-register.md is an allowed, expected artifact for this stage."
+          extra_check: "artifacts/context-register.md exists as a table with columns id, source, provenance, relevance, key claim it supports; ids are CR-<n>; artifacts/event-storm.md exists; when the change touches business behaviour event-storm.md has the sections Timeline, Hotspots, Ubiquitous language, and Candidate seams (observations only), every timeline entry is a past-tense domain event naming its command and actor or explicitly marked as a gap, and every hotspot appears in requirements.md's Open questions or Assumptions; when the change touches no business behaviour (build, dependency, config, or pure-rename work) event-storm.md instead states 'Not applicable' with a one-sentence reason and nothing further is required of it. context-register.md and event-storm.md are allowed, expected artifacts for this stage."
       - uses: validators/adversarial-reviewer
         with:
           focus: "ambiguity, missing acceptance criteria, hidden assumptions"
@@ -70,6 +70,7 @@ stages:
       - uses: skillpacks/addyosmani/interview-me
       - uses: skillpacks/addyosmani/spec-driven-development
       - uses: skillpacks/provenance/context-register
+      - uses: skillpacks/domain-modeling/event-storming
 
   - id: design
     uses: stages/design
@@ -77,11 +78,12 @@ stages:
     inputs:
       requirements: "intake:requirements"
       target_repo: "workflow:target_repo"
+      run_dir: "workflow:run_dir"
     validators:
       - uses: validators/completeness-check
         with:
           checklist: policies/gates/architecture.md
-          extra_check: "load-bearing design decisions cite [context: CR-n] entries from the intake stage's context register, or explicitly state that no external context informed them."
+          extra_check: "load-bearing design decisions cite [context: CR-n] entries from the intake stage's context register, or explicitly state that no external context informed them; when the change touches business behaviour, design.md's Architecture section states the ubiquitous language as a table whose every row carries the source term from the intake event storm or 'new', with a justification on any row where the two differ, the bounded context(s) the change touches with a named relationship for each cross-context integration, and each aggregate with the invariant it protects; when the change touches no business behaviour, design.md states that explicitly and no domain model is required."
       - uses: validators/adversarial-reviewer
       - uses: validators/persona-reviewer
         with:
@@ -92,6 +94,7 @@ stages:
       - uses: skillpacks/addyosmani/documentation-and-adrs
       - uses: skillpacks/distinguished-engineer/failure-domain-thinking
       - uses: skillpacks/provenance/context-register
+      - uses: skillpacks/domain-modeling/domain-driven-design
 
   - id: plan
     uses: stages/plan

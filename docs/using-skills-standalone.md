@@ -5,7 +5,7 @@ Code without starting a harness workflow. Standalone use is useful when you
 want one discipline or a lightweight sequence and are prepared to manage the
 handoffs and review points yourself.
 
-This guide covers all seven packs:
+This guide covers all eight packs:
 
 - `harness/skillpacks/addyosmani/`: 24 engineering lifecycle skills, including
   the `using-agent-skills` meta-skill.
@@ -33,6 +33,12 @@ This guide covers all seven packs:
   source consulted, then cite it on the decisions it supports. Standalone, the
   register is only as good as your discipline in citing it; there is no
   completeness check enforcing the pairing.
+- `harness/skillpacks/domain-modeling/`: 2 paired skills for the business domain
+  — `event-storming` maps it (past-tense event timeline, hotspots, ubiquitous
+  language) and `domain-driven-design` models against it (bounded contexts,
+  context map, aggregates and their invariants). Use them in that order: the
+  storm's hotspots and vocabulary are the modelling skill's input, and the storm
+  deliberately stops short of naming any boundary.
 
 ## What standalone mode does not provide
 
@@ -222,25 +228,27 @@ flowchart TD
 | 1 | `harness-navigator` | **R** | Classify the task and select the minimum sequence. |
 | 2 | `interview-me` | **C** | Use when the desired outcome or constraints are unclear. Produce clarified requirements. |
 | 3 | `idea-refine` | **C** | Use when alternatives need to be generated or narrowed. Produce a selected direction and tradeoffs. |
-| 4 | `spec-driven-development` | **R** | Produce requirements, acceptance criteria, scope, and non-goals before code. |
-| 5 | `planning-and-task-breakdown` | **R** | Turn the approved spec into small, ordered, verifiable tasks. |
-| 6 | `context-engineering` | **R** | Load only the code, conventions, and prior artifacts required for the next slice. |
-| 7 | `source-driven-development` | **C** | Verify version-sensitive behavior against primary documentation when external APIs or tools are involved. |
-| 8 | `incremental-implementation` + `test-driven-development` | **R ↻** | For each thin slice: failing test → minimal implementation → passing test → evidence, then repeat. |
-| 9 | `frontend-ui-engineering` | **C ∥** | Apply during UI slices; include accessibility and runtime UI verification. |
-| 10 | `api-and-interface-design` | **C ∥** | Apply while changing public or internal contracts; record compatibility decisions. |
-| 11 | `observability-and-instrumentation` | **C ∥** | Apply while building operationally important behavior, not as an afterthought. |
-| 12 | `security-and-hardening` | **C ∥** | Apply to auth, permissions, secrets, sensitive data, and untrusted input. |
-| 13 | `performance-optimization` | **C ∥** | Use only with a measured performance or cost target and before/after evidence. |
-| 14 | `doubt-driven-development` | **C ∥** | Cross-examine high-stakes, unfamiliar, or hard-to-reverse decisions during implementation. |
-| 15 | `browser-testing-with-devtools` | **C ↻** | Use for browser behavior; verify each relevant slice in the real runtime. |
-| 16 | `code-review-and-quality` | **R** | Review the complete diff against requirements and verification evidence. |
-| 17 | `code-simplification` | **C** | Reduce unnecessary complexity without changing verified behavior. |
-| 18 | `documentation-and-adrs` | **C** | Document user-facing behavior or consequential decisions. |
-| 19 | `deprecation-and-migration` | **C** | Plan compatibility, rollout, and removal when replacing existing behavior. |
-| 20 | `git-workflow-and-versioning` | **R** | Keep the branch and commits scoped, reviewable, and intentional. |
-| 21 | `ci-cd-and-automation` | **C** | Add or update automated gates when the delivery path or checks change. |
-| 22 | `shipping-and-launch` | **C** | Use when releasing or deploying; include monitoring and rollback evidence. |
+| 4 | `event-storming` | **C** | Use when the change touches business behavior whose rules, vocabulary, or process order are undocumented. Produce the event timeline, hotspots, and glossary before requirements are fixed. |
+| 5 | `spec-driven-development` | **R** | Produce requirements, acceptance criteria, scope, and non-goals before code. |
+| 6 | `domain-driven-design` | **C** | Use when component boundaries are being drawn or the domain has real rules. Produce bounded contexts, the context map, and aggregates with their invariants before task breakdown. |
+| 7 | `planning-and-task-breakdown` | **R** | Turn the approved spec into small, ordered, verifiable tasks. |
+| 8 | `context-engineering` | **R** | Load only the code, conventions, and prior artifacts required for the next slice. |
+| 9 | `source-driven-development` | **C** | Verify version-sensitive behavior against primary documentation when external APIs or tools are involved. |
+| 10 | `incremental-implementation` + `test-driven-development` | **R ↻** | For each thin slice: failing test → minimal implementation → passing test → evidence, then repeat. |
+| 11 | `frontend-ui-engineering` | **C ∥** | Apply during UI slices; include accessibility and runtime UI verification. |
+| 12 | `api-and-interface-design` | **C ∥** | Apply while changing public or internal contracts; record compatibility decisions. |
+| 13 | `observability-and-instrumentation` | **C ∥** | Apply while building operationally important behavior, not as an afterthought. |
+| 14 | `security-and-hardening` | **C ∥** | Apply to auth, permissions, secrets, sensitive data, and untrusted input. |
+| 15 | `performance-optimization` | **C ∥** | Use only with a measured performance or cost target and before/after evidence. |
+| 16 | `doubt-driven-development` | **C ∥** | Cross-examine high-stakes, unfamiliar, or hard-to-reverse decisions during implementation. |
+| 17 | `browser-testing-with-devtools` | **C ↻** | Use for browser behavior; verify each relevant slice in the real runtime. |
+| 18 | `code-review-and-quality` | **R** | Review the complete diff against requirements and verification evidence. |
+| 19 | `code-simplification` | **C** | Reduce unnecessary complexity without changing verified behavior. |
+| 20 | `documentation-and-adrs` | **C** | Document user-facing behavior or consequential decisions. |
+| 21 | `deprecation-and-migration` | **C** | Plan compatibility, rollout, and removal when replacing existing behavior. |
+| 22 | `git-workflow-and-versioning` | **R** | Keep the branch and commits scoped, reviewable, and intentional. |
+| 23 | `ci-cd-and-automation` | **C** | Add or update automated gates when the delivery path or checks change. |
+| 24 | `shipping-and-launch` | **C** | Use when releasing or deploying; include monitoring and rollback evidence. |
 
 The implementation and TDD skills form one repeated micro-loop. Do not write
 all production code and defer tests to a later numbered step. Cross-cutting

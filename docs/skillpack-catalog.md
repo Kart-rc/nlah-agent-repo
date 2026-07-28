@@ -115,3 +115,16 @@ harness's operating controls (see `CLAUDE.md`).
 | Skill | What it does | Default attachment |
 |---|---|---|
 | [context-register](../harness/skillpacks/provenance/context-register/USAGE.md) | Gathering stages emit a source register; consuming stages cite `[context: CR-n]`; `retrospect` reports cited vs never-cited | `intake`, `design`, `plan` (sdlc-autonomous, sdlc-interactive) |
+
+## `domain-modeling` — business-domain discovery and modelling (2 skills)
+
+| Skill | What it does | Default attachment |
+|---|---|---|
+| [event-storming](../harness/skillpacks/domain-modeling/event-storming/USAGE.md) | Problem-space discovery: a timeline of past-tense domain events with their commands, actors, policies, external systems, and read models, plus hotspots and the ubiquitous language | `intake` (sdlc, sdlc-autonomous, sdlc-interactive) |
+| [domain-driven-design](../harness/skillpacks/domain-modeling/domain-driven-design/USAGE.md) | Solution-space modelling: bounded contexts as language boundaries, a context map naming every relationship, aggregates defined by the invariant they protect | `design` (sdlc, sdlc-autonomous, sdlc-interactive) |
+
+Both pair with a completeness-check `extra_check` (strings in each USAGE.md);
+without it the discipline is advisory and `event-storm.md` is not an expected
+artifact. `domain-driven-design` is also a `skill_refs` default on
+`stages/design`; `event-storming` deliberately is not one on `stages/intake`,
+which all six workflows share.
