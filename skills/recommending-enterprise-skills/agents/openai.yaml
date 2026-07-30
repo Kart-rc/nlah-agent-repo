@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recommend Enterprise Skills"
+  short_description: "Match a task to enterprise skills"
+  default_prompt: "Use $recommending-enterprise-skills to select skills from a directory for this task brief."
