@@ -1,0 +1,160 @@
+# Batch issue fixing with per-issue git worktree isolation.
+# Goal-driven with checkpoints: issue-intake defines per-issue testable
+# acceptance criteria; plan -> implement -> verify executes against them;
+# hard verify is ON (a not-met criterion re-opens implement, max 3 rounds) -
+# the run does not stop until every issue's criteria pass or the issue is
+# evidenced as blocked, at which point exhaustion escalates to a human.
+# Stage ids reuse the sdlc names (implement, verify, deliver) so the risk
+# overlay's at_stage/before hooks apply unchanged.
+# Attach/detach/swap = edit a line, then run `python3 scripts/harness_lint.py`.
+
+manifest_version: "1.0"
+
+workflow:
+  id: issue-batch-fix
+  name: "Issue Batch Fix (worktree-isolated)"
+  description: "Take a LIST of issues, understand each against the codebase, fix each on its own branch in its own git worktree, verify every issue's acceptance criteria, and package per-issue outcomes."
+  intent:
+    summary: "Batch remediation of multiple distinct issues with per-issue git worktree and branch isolation. Requires a list of two or more issues; a single bug fix routes to the sdlc family instead."
+    triggers:
+      - "fix these issues: ..."
+      - "here's a list of bugs - fix each one in its own branch"
+      - "work through this backlog of issues, one worktree per issue"
+      - "batch-fix issues #12, #34 and #56"
+    signals: [issues, issue list, batch, backlog, worktree, worktrees, per-issue branch]
+    work_types:
+      - issue-batch-fix
+
+inputs:
+  - name: issues
+    description: "The list of issues, verbatim: pasted descriptions, a path to a file listing them, or issue URLs."
+    format: markdown
+    required: true
+  - name: target_repo
+    description: "Path to the codebase the issues are reported against."
+    format: path
+    required: true
+  - name: base_branch
+    description: "Optional branch to base issue branches on; defaults to the repo's current HEAD."
+    format: text
+    required: false
+  - name: run_dir
+    description: "This run's directory (runs/<run-id>). Resolved by the orchestrator at initialization - never requested from the user."
+    format: path
+    required: true
+
+defaults:
+  gate:
+    max_repair_attempts: 2
+    on_exhaustion: escalate
+  producer_context: fresh
+
+knowledge: []
+
+approval_checkpoints:
+  - before: implement
+    mode: notify
+    note: "About to create per-issue worktrees and branches in the target repo. Issue briefs (with acceptance criteria) and the fix plan are on disk for review; at High/Critical risk the overlay upgrades this to a blocking checkpoint."
+
+stages:
+  - id: intake
+    uses: stages/issue-intake
+    needs: []
+    inputs:
+      issues: "workflow:issues"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "every issue that appears in issue_briefs.md appears in issue_manifest.json with the same id, and vice versa; acceptance_criteria arrays are non-empty for every issue not marked needs-clarification."
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "untestable acceptance criteria, misdiagnosed root causes, issues silently merged or dropped, criteria that restate the fix instead of the observable outcome"
+    knowledge:
+      - uses: knowledge/enterprise-mcp
+    skills:
+      - uses: skillpacks/addyosmani/spec-driven-development
+
+  - id: plan
+    uses: stages/fix-plan
+    needs: [intake]
+    inputs:
+      issue_briefs: "intake:issue_briefs"
+      issue_manifest: "intake:issue_manifest"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "every issue id in issue_manifest.json appears as a section heading in fix_plan.md; every acceptance criterion of every issue appears in that issue's traceability table."
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "acceptance criteria with no proving step, cross-issue file conflicts not declared, verification commands that cannot actually discriminate pass from fail"
+    skills:
+      - uses: skillpacks/addyosmani/planning-and-task-breakdown
+
+  - id: implement
+    uses: stages/fix-issues
+    needs: [plan]
+    inputs:
+      fix_plan: "plan:fix_plan"
+      issue_manifest: "intake:issue_manifest"
+      target_repo: "workflow:target_repo"
+      base_branch: "workflow:base_branch"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "fix_manifest.json and fix_summary.md agree on every issue's status, branch, and commit list; every issue id from issue_manifest.json appears in both."
+      - uses: validators/red-team
+        with:
+          focus: "secrets in commits, changes leaking onto the wrong branch or into the primary working tree, worktrees created outside <target_repo>/.worktrees/"
+    gate:
+      max_repair_attempts: 3
+    skills:
+      - uses: skillpacks/addyosmani/git-workflow-and-versioning
+      - uses: skillpacks/addyosmani/incremental-implementation
+      - uses: skillpacks/addyosmani/test-driven-development
+
+  - id: verify
+    uses: stages/verify-fixes
+    needs: [implement]
+    loopback:        # hard verify: a not-met criterion re-opens implement (HARNESS.md §3.1.6)
+      to: implement
+      max_rounds: 3
+    inputs:
+      fix_manifest: "implement:fix_manifest"
+      issue_manifest: "intake:issue_manifest"
+      target_repo: "workflow:target_repo"
+    validators:
+      - uses: validators/completeness-check
+        with:
+          extra_check: "hard verify: for every issue with status fixed, every criterion verdict is 'met', or 'not verifiable' with a stated environment reason; any 'not met' verdict on a fixed issue is a fail finding carrying defect_stage: implement - the defect lives on that issue's branch, not in this honest report. A blocked issue with an evidence-checked blocker is NOT a defect finding."
+      - uses: validators/adversarial-reviewer
+        with:
+          focus: "test adequacy per issue - criteria verified only by unit tests, missing negative cases, evidence gathered in the wrong worktree, blocked verdicts taken on faith"
+    skills:
+      - uses: skillpacks/addyosmani/debugging-and-error-recovery
+
+  - id: deliver
+    uses: stages/deliver
+    needs: [verify]
+    inputs:
+      change_summary: "implement:fix_summary"
+      verification_report: "verify:fix_verification_report"
+      requirements: "intake:issue_briefs"
+    validators:
+      - uses: validators/completeness-check
+      - uses: validators/persona-reviewer
+        with:
+          persona: "Maintainer who must review one branch per issue, decide merge order, clean up the worktrees, and triage the blocked issues"
+    skills:
+      - uses: skillpacks/addyosmani/shipping-and-launch
+
+outputs:
+  - name: issue_briefs
+    from: "intake:issue_briefs"
+  - name: fix_manifest
+    from: "implement:fix_manifest"
+  - name: verification_report
+    from: "verify:fix_verification_report"
+  - name: delivery
+    from: "deliver:delivery_package"
