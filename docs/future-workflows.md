@@ -2,8 +2,8 @@
 
 The harness ships with the `sdlc` family (`sdlc`, `sdlc-autonomous`,
 `sdlc-interactive` — one composition at three execution modes, selected by
-the router's Step 3b rubric), `proposal`, `tech-decision`, and
-`architecture-review`. This document maps the router's full work-type
+the router's Step 3b rubric), `issue-batch-fix`, `proposal`,
+`tech-decision`, and `architecture-review`. This document maps the router's full work-type
 taxonomy to workflows (existing and future) and walks through composing new
 candidates — **roadmap** and **LOE estimation** in full, plus the shipped
 **tech-director family** and its remaining future members — to show that new
@@ -15,6 +15,7 @@ workflows are compositions, not construction projects.
 |---|---|---|
 | new-feature | `sdlc` | — |
 | bug-fix | `sdlc` | possible slim `bugfix` variant (drop design for localized fixes) |
+| issue-batch-fix (a list of two or more issues) | `issue-batch-fix` | — |
 | api-interface-change | `sdlc` | + data gate checklist on design when schemas move |
 | performance-cost-change | `sdlc` | + baseline/re-measure criteria via a `benchmark` stage |
 | refactor-simplification | `sdlc` | behavior-preservation `extra_check` on verify |
@@ -42,6 +43,15 @@ available to every future composition above.
 Note: `idea-refinement` stays with `proposal` when the ask is
 persuasion-shaped ("make the case for..."); decision-shaped asks with a
 nameable option set ("pick between X and Y") route to `tech-decision`.
+
+Note: `issue-batch-fix` deliberately deviates from the "one new judgment
+stage" pattern — it added four library stages (`issue-intake`, `fix-plan`,
+`fix-issues`, `verify-fixes`). Batch execution with per-issue git worktree
+and branch isolation changes the *contracts* of intake, plan, implement,
+and verify (per-issue manifests, worktree creation, per-branch commits),
+and `docs/adding-a-stage.md`'s rule is to fork a stage exactly when the
+contract differs, never to stretch an existing one. A single issue routes
+to the `sdlc` family; this workflow requires a list of two or more.
 
 ## Walkthrough 1: composing a `roadmap` workflow
 

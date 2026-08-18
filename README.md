@@ -51,13 +51,14 @@ in its own subagent context, each blocked by an independent validation gate.
 High-risk work automatically gains extra validators and human-approval
 checkpoints via `harness/policies/risk-policy.yaml`.
 
-Six workflows ship in v1:
+Seven workflows ship in v1:
 
 | Workflow | Deliverable | Key input |
 |---|---|---|
 | `sdlc` | Verified, delivered code change | `target_repo` — path to the codebase to change |
 | `sdlc-autonomous` | End-to-end autonomous change: verified, documented, release-ready, plus a self-retrospective with ratifiable harness proposals; hard verify re-opens implement when verification fails | `target_repo` (`run_dir` is orchestrator-resolved) |
 | `sdlc-interactive` | The same chain stage by stage with a human in the loop: EXPLAIN.md teaching artifacts, comprehension quizzes at document/deliver, notify/block approval checkpoints, hard verify | `target_repo` (`run_dir` is orchestrator-resolved) |
+| `issue-batch-fix` | Batch of issues fixed on per-issue branches in isolated git worktrees; hard verify re-opens the fix stage until every issue's acceptance criteria pass or the issue is evidenced blocked | `target_repo`, `issues` — the issue list (text, file path, or URLs) |
 | `proposal` | Audience-ready business/technical case | `audience` |
 | `tech-decision` | Time-bound decision record with rationale, dissent, revisit triggers | `audience`, optional `decision_deadline` |
 | `architecture-review` | Evidence-cited verdict: approve / approve-with-conditions / reject | `subject` — path to the design doc, RFC, or codebase |
@@ -138,8 +139,8 @@ Critical work cannot start without explicit human approval.
 | `.claude/skills/workflow-composer/` | Create/modify workflow manifests (scaffold, lint, dry-run) |
 | `.claude/skills/harness-navigator/` | Off-ramp advisor when a shipped workflow is not wanted: inventory → interview → reasoning + one command |
 | `.claude/agents/` | Subagent personas: 3 producers, 5 validators (tool permissions = boundaries) |
-| `harness/workflows/` | Composed workflows: `sdlc`, `sdlc-autonomous`, `sdlc-interactive`, `proposal`, `tech-decision`, `architecture-review` |
-| `harness/stages/` | Stage library (15 stages; `intake` is shared across workflows) |
+| `harness/workflows/` | Composed workflows: `sdlc`, `sdlc-autonomous`, `sdlc-interactive`, `issue-batch-fix`, `proposal`, `tech-decision`, `architecture-review` |
+| `harness/stages/` | Stage library (19 stages; `intake` is shared across workflows) |
 | `harness/validators/` | Validator library (5 types, parameterizable) |
 | `harness/knowledge/` | Knowledge adapters: `enterprise-mcp`, `second-brain` |
 | `harness/policies/` | Risk policy (risk → validators + approvals) and gate checklists |
