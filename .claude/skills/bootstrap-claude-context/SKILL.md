@@ -1,6 +1,6 @@
 ---
 name: bootstrap-claude-context
-description: Use when a repository needs Claude Code onboarding, layered project instructions, or installation of a self-improving context scaffold.
+description: Use when a repository needs the layered Claude Code context scaffold - layered project instructions and installation of a self-improving learning loop. Do NOT use for generating human-facing onboarding documentation for a codebase - that is codebase-onboarding.
 ---
 
 # Bootstrap Claude Context

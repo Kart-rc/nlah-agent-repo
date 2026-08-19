@@ -19,7 +19,7 @@ frontmatter (materialized into new manifests by workflow-composer) and/or
 attached in a shipped workflow manifest. "ad hoc" = no default; attach it
 explicitly where its USAGE.md suggests.
 
-## `.claude/skills` — Claude Code runtime skills (6 skills)
+## `.claude/skills` — Claude Code runtime skills (7 skills)
 
 These are a different category from the practice skills below: Claude Code
 discovers them automatically and triggers them from their frontmatter
@@ -33,7 +33,8 @@ harness's operating controls (see `CLAUDE.md`).
 | [workflow-composer](../.claude/skills/workflow-composer/USAGE.md) | Creates/modifies workflow manifests from existing stages, validators, adapters, skill packs; lints and dry-runs | Invoked when you ask for a new/changed workflow |
 | [harness-navigator](../.claude/skills/harness-navigator/USAGE.md) | Off-ramp advisor for work that is not going through a shipped workflow: inventories skills/workflows/stages via subagents, interviews you, then returns reasoning plus one command — a standalone sequence or a pre-filled composer handoff | Triggered by meta-questions ("which skills should I use", "I don't want a full workflow") |
 | [architecture-decision-records](../.claude/skills/architecture-decision-records/USAGE.md) | Drives and records architectural decisions as ADRs calibrated to enterprise context | Triggered when a significant technical choice is made or questioned |
-| [bootstrap-claude-context](../.claude/skills/bootstrap-claude-context/USAGE.md) | Installs a layered, self-improving Claude Code context scaffold into a repository | Invoked when onboarding a repo to Claude Code |
+| [bootstrap-claude-context](../.claude/skills/bootstrap-claude-context/USAGE.md) | Installs a layered, self-improving Claude Code context scaffold into a repository | Invoked when a repo needs the Claude Code context scaffold |
+| [codebase-onboarding](../.claude/skills/codebase-onboarding/USAGE.md) | Explores a target codebase with five parallel read-only subagents and generates a persistent onboarding package: a docs/onboarding/ guide set, a draft CLAUDE.md (approval-gated when one exists), and a single self-contained onboarding.html | Triggered by "onboard me to this codebase" / "create onboarding docs", or invoked by name |
 | [okf-second-brain](../.claude/skills/okf-second-brain/USAGE.md) | Creates and incrementally grows a personal second brain as an OKF v0.1 knowledge bundle (typed markdown concepts, indexes, change log, conformance validator) | Triggered when starting a second brain or saving/ingesting a document, URL, or insight into it |
 
 ## `addyosmani` — engineering lifecycle (24 skills, vendored)

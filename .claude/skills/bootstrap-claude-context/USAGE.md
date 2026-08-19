@@ -16,7 +16,9 @@ is evidence-backed, and no existing guidance is ever replaced silently.
 
 ## When to invoke
 
-- A repository has no Claude Code onboarding and needs project instructions.
+- A repository has no Claude Code context scaffold and needs project
+  instructions. (Human-facing onboarding *docs* for a codebase are the
+  `codebase-onboarding` skill's job, not this one's.)
 - You want layered instructions: lean universal root guidance, scoped detail
   in the narrowest `.claude/rules/` file or nested `CLAUDE.md`.
 - You want the self-improving loop — session hooks plus review-gated
@@ -27,8 +29,8 @@ is evidence-backed, and no existing guidance is ever replaced silently.
   mutate it — the skill will preview and stop for explicit approval.
 
 **Discovery:** auto-discovered from `.claude/skills/`; its frontmatter
-`description` triggers it when a repository needs Claude Code onboarding,
-layered project instructions, or the context scaffold.
+`description` triggers it when a repository needs the layered Claude Code
+context scaffold: layered project instructions and the learning loop.
 
 ## How to invoke
 

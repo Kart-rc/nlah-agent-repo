@@ -26,7 +26,7 @@ structural changes — and `scripts/harness_lint.py` verifies every composition.
 
 ## How to use this repo
 
-There are four approaches, from fully harnessed to fully manual. Pick by how
+There are five approaches, from fully harnessed to fully manual. Pick by how
 much enforcement the work needs — or, if you are not sure which applies, ask
 the `harness-navigator` skill: it inventories what is actually available and
 hands back the concrete command for the path that fits.
@@ -36,7 +36,8 @@ hands back the concrete command for the path that fits.
 | 1 | **Run a delivery workflow** | You have a delivery task and want risk-scaled rigor: blocking gates, repair loops, approvals, resumable state | Just describe the task — the `agentic-delivery-router` skill routes it |
 | 2 | **Compose or modify a workflow** | The work type has no matching workflow, or you want to attach/detach/reorder modules | `workflow-composer` skill |
 | 3 | **Use practice skills standalone** | You want one discipline or a lightweight sequence and will manage handoffs and review yourself | `harness-navigator` skill, or [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) |
-| 4 | **Bootstrap Claude context in another repo** | A different repository needs Claude Code onboarding and layered project instructions | `bootstrap-claude-context` skill |
+| 4 | **Bootstrap Claude context in another repo** | A different repository needs the layered Claude Code context scaffold and self-improving instructions | `bootstrap-claude-context` skill |
+| 5 | **Onboard humans to another repo** | A codebase needs approachable, persistent onboarding docs, a CLAUDE.md, and a shareable HTML guide for new developers | `codebase-onboarding` skill |
 
 ### 1. Run a delivery workflow (the default)
 
@@ -120,6 +121,16 @@ The **bootstrap-claude-context** skill installs a layered, self-improving
 Claude Code instruction scaffold (project instructions, rules, learning loop)
 into a target repository. It previews every write with a dry-run installer and
 never mutates existing instructions without explicit approval.
+
+### 5. Onboard humans to another repo
+
+The **codebase-onboarding** skill explores a target codebase with five
+parallel read-only subagents and generates a persistent onboarding package:
+a `docs/onboarding/` guide set (tour, architecture, getting started,
+conventions, glossary, first change, gotchas), a draft `CLAUDE.md`
+(approval-gated when one already exists), and a single self-contained
+`onboarding.html`. Where approach 4 installs the context *scaffold*, this
+one writes the onboarding *content* — run both for the full picture.
 
 ## Why validation is the centerpiece
 
