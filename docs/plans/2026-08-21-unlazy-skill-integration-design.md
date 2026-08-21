@@ -61,6 +61,8 @@ harness/skillpacks/unlazy/
 ├── LICENSE
 ├── README.md
 └── unlazy/
+    ├── LICENSE
+    ├── SOURCE.md
     ├── SKILL.md
     ├── USAGE.md
     ├── references/
@@ -68,15 +70,16 @@ harness/skillpacks/unlazy/
     └── templates/
 ```
 
-The executable skill directory contains only runtime material. Pack-level
-`README.md` records provenance, the pinned commit, adaptations, and NLAH
-attachment policy. `USAGE.md` explains standalone invocation, ledger location,
-the Node 16+ requirement, and why the optional Stop hook is never installed
-automatically.
+The executable skill directory contains runtime material plus an install-local
+license and source record. Pack-level `README.md` records provenance, the
+pinned commit, adaptations, and NLAH attachment policy. `USAGE.md` explains
+standalone invocation, ledger location, the Node 16+ requirement, and why the
+optional Stop hook is never installed automatically.
 
 The vendored `SKILL.md` retains the upstream method but normalizes frontmatter
 to the harness/Codex discovery contract (`name` and `description`). Attribution,
-version, source, and license move to the pack-level provenance files.
+version, source, and license are preserved both at pack level and, for personal
+installation, inside the executable skill directory.
 
 ## Integration boundaries
 
@@ -86,9 +89,9 @@ version, source, and license move to the pack-level provenance files.
 - Do not make an upstream `ABANDON` entry equivalent to a passed NLAH gate.
 - Document that full harness runs should use their existing stage artifacts,
   validators, repair loops, and escalation instead.
-- Keep the upstream checker behavior intact: commands in a user/agent-authored
-  ledger are shell commands and must remain within the active agent's normal
-  permission boundary.
+- Preserve upstream checker behavior except for regression-tested, disclosed
+  correctness hardening. Commands in a user/agent-authored ledger are shell
+  commands and must remain within the active agent's normal permission boundary.
 
 ## Documentation changes
 
@@ -111,8 +114,11 @@ while the package is absent, then prove:
 4. `gate-check.mjs --status` reports an unchecked fixture as unmet;
 5. running the checker executes a deterministic gate, checks the box, records
    evidence, and subsequently reports all gates met; and
-6. documentation and catalog entries expose the new skill without a default
-   workflow attachment.
+6. malformed ledgers fail closed and deciding evidence is recorded;
+7. install-local provenance and license files survive personal installation;
+8. actual pack/skill counts are nine and 48; and
+9. documentation and catalog entries expose the new skill without a workflow
+   or stage-default attachment.
 
 Final verification runs the focused test, the full test suite, harness lint,
 Node syntax checks for every vendored script, and a clean diff/status audit.

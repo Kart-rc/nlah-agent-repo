@@ -5,7 +5,7 @@ Code without starting a harness workflow. Standalone use is useful when you
 want one discipline or a lightweight sequence and are prepared to manage the
 handoffs and review points yourself.
 
-This guide covers all eight packs:
+This guide covers all nine packs:
 
 - `harness/skillpacks/addyosmani/`: 24 engineering lifecycle skills, including
   the `using-agent-skills` meta-skill.
@@ -39,6 +39,10 @@ This guide covers all eight packs:
   context map, aggregates and their invariants). Use them in that order: the
   storm's hotspots and vocabulary are the modelling skill's input, and the storm
   deliberately stops short of naming any boundary.
+- `harness/skillpacks/unlazy/`: 1 vendored completion-discipline skill for
+  substantial standalone work — an evidence-bearing gate ledger, executable
+  checks, leaf/integration gates, and report-number remeasurement. It is ad hoc
+  by design and has no default workflow attachment.
 
 ## What standalone mode does not provide
 
@@ -55,6 +59,12 @@ one or more skills does **not** activate the orchestration protocol in
 | Bounded repair loops and escalation | You decide whether to revise, retry, escalate, or stop. |
 | Externalized, resumable run state | You maintain explicit artifact paths and handoff notes. |
 
+`unlazy` can strengthen this mode with a task-local `GATES.md` ledger and a
+deterministic checker. It still does not supply risk routing, independent
+validators, approval policy, bounded repair/escalation, or NLAH's resumable
+multi-stage state. Use it when that lightweight completion floor is enough;
+switch to the full harness when the missing guarantees matter.
+
 The harness-specific `agentic-delivery-router` and `workflow-composer` skills
 are therefore **not** part of the standalone sequences below. Use the full
 harness when you need its stronger execution and validation guarantees.
@@ -65,7 +75,8 @@ you about the task, and hands back a concrete command — including the case whe
 a shipped workflow turns out to fit after all. `using-agent-skills` remains the
 in-sequence meta-router *within the addyosmani pack*: its decision tree maps a
 development phase onto one of that pack's 24 skills, and it sets the six Core
-Operating Behaviors for the session. It does not know about the other six packs.
+Operating Behaviors for the session. It does not know about the other eight
+packs.
 
 ## Choose a usage mode
 
@@ -135,11 +146,13 @@ done
 
 The loop discovers packs by globbing `harness/skillpacks/`, so a pack added
 later installs without editing this command. It only copies directories
-containing `SKILL.md` — which skips each pack's `README.md` and `LICENSE` — and
-skips every target that already exists. It never overwrites a personal skill.
-Review skipped names before deciding whether to keep the existing skill, rename
-one copy, or use one-off path loading. Personal skills take precedence over
-project skills with the same name.
+containing `SKILL.md` and therefore skips pack-level metadata. A skill whose
+license or provenance must travel with personal installs, such as `unlazy`,
+keeps those files inside its copied directory as well. The loop skips every
+target that already exists and never overwrites a personal skill. Review
+skipped names before deciding whether to keep the existing skill, rename one
+copy, or use one-off path loading. Personal skills take precedence over project
+skills with the same name.
 
 Note that installing the pack meta-skill `using-agent-skills` personally makes
 it auto-discoverable in every project, where its description ("discover which

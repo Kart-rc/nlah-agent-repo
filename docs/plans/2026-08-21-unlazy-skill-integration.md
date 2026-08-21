@@ -153,6 +153,8 @@ git commit -m "test: specify unlazy skillpack integration"
 
 **Files:**
 - Create: `harness/skillpacks/unlazy/LICENSE`
+- Create: `harness/skillpacks/unlazy/unlazy/LICENSE`
+- Create: `harness/skillpacks/unlazy/unlazy/SOURCE.md`
 - Create: `harness/skillpacks/unlazy/unlazy/SKILL.md`
 - Create: `harness/skillpacks/unlazy/unlazy/references/gates.md`
 - Create: `harness/skillpacks/unlazy/unlazy/references/method.md`
@@ -174,8 +176,11 @@ changelog, or contribution files into the executable skill directory.
 **Step 2: Normalize discovery frontmatter**
 
 Keep only `name` and `description` in `SKILL.md` frontmatter. Leave the
-instruction body and all scripts/references/templates behaviorally identical
-to upstream commit `ed9e8d2b5919698cf2c54bda270d507e10b69617`.
+references/templates behaviorally identical to upstream commit
+`ed9e8d2b5919698cf2c54bda270d507e10b69617`. If tests or review expose a
+runtime or safety defect, apply the smallest regression-tested fix and disclose
+it in pack provenance. Preserve the shell-execution warning in automatically
+loaded instructions and the upstream license/provenance in personal installs.
 
 **Step 3: Run the package tests**
 
@@ -191,7 +196,7 @@ documentation/provenance assertions may still fail until Tasks 3–4.
 **Step 1: Write pack provenance**
 
 Document the source URL, full audited commit, MIT license, vendored file set,
-frontmatter-only adaptation, Node 16+ runtime, and update procedure.
+all local adaptations, Node 16+ runtime, and update procedure.
 
 **Step 2: Write the usage contract**
 
@@ -216,6 +221,7 @@ Expected: package/provenance/checker tests pass; catalog test still fails.
 
 **Files:**
 - Create: `docs/unlazy-skill-assessment.md`
+- Create: `docs/evaluations/2026-08-21-unlazy-comparison.md`
 - Modify: `README.md`
 - Modify: `docs/skillpack-catalog.md`
 - Modify: `docs/using-skills-standalone.md`
@@ -282,9 +288,11 @@ Expected: all tests pass.
 **Step 4: Audit source fidelity**
 
 Diff each vendored runtime file against the pinned clone. All references,
-scripts, and templates must be byte-identical. `SKILL.md` may differ only in
-its YAML frontmatter. Confirm no workflow manifest references
-`skillpacks/unlazy`.
+templates, `stop-hook.mjs`, and `install-hooks.mjs` must be byte-identical.
+`SKILL.md` may differ only in its YAML frontmatter and disclosed shell warning.
+`gate-check.mjs` may differ only in the disclosed, focused-test-covered
+positional-argument, fail-closed parsing, and deciding-evidence fixes. Confirm
+no workflow manifest or stage default references `skillpacks/unlazy`.
 
 **Step 5: Audit the diff**
 
