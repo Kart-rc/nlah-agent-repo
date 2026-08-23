@@ -100,9 +100,9 @@ workflow, and stage libraries, interviews you about the task, and returns a
 standalone sequence with the reasoning behind it — or tells you when a shipped
 workflow or a new composition would serve you better.
 
-The 47 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
-distinguished-engineer, geoffreylitt, review-debt, teaching, provenance, and
-domain-modeling packs) work directly in
+The 48 practice skills in `harness/skillpacks/` (addyosmani, tech-director,
+distinguished-engineer, geoffreylitt, review-debt, teaching, provenance,
+domain-modeling, and unlazy packs) work directly in
 Claude Code — either
 loaded by path from this repo or installed once into `~/.claude/skills/` for
 `/skill-name` invocation across projects.
@@ -112,8 +112,10 @@ fix, technical decision, architecture review, people/org work).
 
 Standalone mode trades enforcement for lightness: no automatic risk routing,
 no blocking validators, no repair loops, no resumable state — you manage
-handoffs and review points yourself. Switch to approach 1 when the process
-must be enforced rather than recommended.
+handoffs and review points yourself. The `unlazy` skill can add a task-local
+evidence ledger and executable completion checks, but it does not recreate the
+full harness guarantees. Switch to approach 1 when the process must be enforced
+rather than recommended.
 
 ### 4. Bootstrap Claude context in another repo
 
@@ -155,7 +157,7 @@ Critical work cannot start without explicit human approval.
 | `harness/validators/` | Validator library (5 types, parameterizable) |
 | `harness/knowledge/` | Knowledge adapters: `enterprise-mcp`, `second-brain` |
 | `harness/policies/` | Risk policy (risk → validators + approvals) and gate checklists |
-| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), original `distinguished-engineer` (deep-IC technical mastery), `geoffreylitt` (understanding AI-written code), `review-debt` (evidence-backed code-review burden), `teaching` (EXPLAIN.md at human checkpoints), `provenance` (context registers and citations), and `domain-modeling` (event storming at intake, domain-driven design at design) |
+| `harness/skillpacks/` | Practice skills: vendored `addyosmani` (MIT, attributed), original `tech-director` (director judgment disciplines), original `distinguished-engineer` (deep-IC technical mastery), `geoffreylitt` (understanding AI-written code), `review-debt` (evidence-backed code-review burden), `teaching` (EXPLAIN.md at human checkpoints), `provenance` (context registers and citations), `domain-modeling` (event storming at intake, domain-driven design at design), and vendored `unlazy` (standalone evidence ledgers and executable completion gates) |
 | [`docs/using-skills-standalone.md`](docs/using-skills-standalone.md) | Claude Code setup, handoff contract, and sequences for using practice skills without the harness |
 | `harness/schema/` | JSON Schemas — the SDK-ready contracts for every document type |
 | `scripts/harness_lint.py` | Validates schemas, cross-refs, validator coverage, topology |
@@ -171,6 +173,10 @@ Critical work cannot start without explicit human approval.
   gates, and approval discipline merged into the harness-native router skill.
 - **addyosmani/agent-skills**: 24 practice skills vendored as an attachable
   skill pack.
+- **Leonxlnx/unlazy**: vendored standalone completion discipline with
+  task-local evidence ledgers and executable gates; intentionally not attached
+  to shipped workflows. See
+  [`docs/unlazy-skill-assessment.md`](docs/unlazy-skill-assessment.md).
 - **review-debt**: first-party code-review guidance adapted from Sachin Gupta's
   “Your Coding Agent Is Creating Review Debt” talk, focused on reviewability
   and human understanding without penalizing AI assistance.

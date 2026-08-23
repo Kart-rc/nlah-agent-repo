@@ -129,3 +129,15 @@ without it the discipline is advisory and `event-storm.md` is not an expected
 artifact. `domain-driven-design` is also a `skill_refs` default on
 `stages/design`; `event-storming` deliberately is not one on `stages/intake`,
 which all six workflows share.
+
+## `unlazy` — executable standalone completion gates (1 skill, vendored)
+
+| Skill | What it does | Default attachment |
+|---|---|---|
+| [unlazy](../harness/skillpacks/unlazy/unlazy/USAGE.md) | Task-local acceptance ledgers, runnable `CHECK` / `EXPECT` gates, automatic evidence capture, deep-work leaf/integration gates, and final-report number remeasurement | ad hoc / standalone |
+
+`unlazy` fills a standalone-mode gap; it does not replace NLAH's independent
+validators, locked workflow topology, repair loops, escalation, or resumable
+state. No shipped workflow attaches it. See the
+[usefulness assessment](unlazy-skill-assessment.md) for the overlap audit,
+compatibility boundaries, source pin, and integration decision.
